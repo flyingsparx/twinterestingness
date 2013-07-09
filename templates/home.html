@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<h1>Welcome to Twinterestigness</h1>
+
+{% if logged == True %}
+<h2>You are logged in</h2>
+
+{{ user.name }}<br />
+<img style="width:100px;height:100px" src="{{ user.profile_image_url_https }}" />
+
+{% else %}
+{{ auth }}
+
+{% endif %}
+
+{% endblock %}
