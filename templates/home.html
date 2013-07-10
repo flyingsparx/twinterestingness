@@ -1,17 +1,49 @@
 {% extends "layout.html" %}
 {% block body %}
 
-<h1>Welcome to Twinterestigness</h1>
+<section>
+    <h1>Welcome to Twinterestingness</h1>
+    <p>Twinterestingness is an experiment by <a href="http://cs.cardiff.ac.uk" target="_blank">Cardiff School of Computer Science &amp; Informatics</a> from <a href="http://cardifff.ac.uk">Cardiff University</a>.</p>
 
-{% if logged == True %}
-<h2>You are logged in</h2>
+    <h2>The experiment</h2>
+    <p>The idea of the experiment is to get an idea of the content that <i> you</i> find interesting from the users that you follow. Thus, to take part in the experiment, you need to have a <a href="https://twitter.com" target="_blank">Twitter</a> account and be following at least 10 users.</p>
+    <p>If you take part in the experiment, you will be asked a series of questions in which we ask you to rate the Tweets from your Twitter friends based on how <i>interesting</i> you find them. We'll tell you more about it before you start the experiment.</p>
 
-{{ user.name }}<br />
-<img style="width:100px;height:100px" src="{{ user.profile_image_url_https }}" />
+    {% if logged == True %}
+    <h2>Thank you for signing in</h2>
+    <p>
 
-{% else %}
-{{ auth }}
+    {% else %}
+    <h2>Getting started</h2>
+    <p>To take part in the experiment, please sign in using your Twitter account.</p> 
+    <button class="sign_in"><a href="{{ auth }}">sign in with Twitter</a></button>
 
-{% endif %}
+    {% endif %}
+</section>
+
+<aside>
+    {% if logged == True %}
+    <h3>Thank you for signing in</h3>
+
+    {{ user.name }}<br />
+    <img style="width:100px;height:100px" src="{{ user.profile_image }}" />
+
+    {% else %}
+    <h3>Sign in</h3>
+    <p>To take part in this experiment, please sign in with Twitter.</p>
+    <button class="sign_in"><a href="{{ auth }}">sign in</a></button>
+
+    {% endif %}
+</aside>
+
+<aside>
+    <h3>Project information</h3>
+    <p>This experiment is part of a research project by Will Webberley.</p>
+    <ul>
+        <li class="web"><p><a href="http://flyingsparx.net/research">Research information</a></p></li>
+        <li class="twitter"><p>Tweet me <a href="https://twitter.com/flyingSparx">@flyingSparx</a></p></li>
+        <li class="mail"><p><a href="mailto:W.M.Webberley@cs.cardiff.ac.uk">W.M.Webberley@cs.cardiff.ac.uk</a></p></li>
+    </ul>
+</aside>
 
 {% endblock %}

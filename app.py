@@ -8,7 +8,7 @@ app.secret_key = os.environ.get('TWINTEREST_SECRET_KEY')
 @app.route("/")
 def home():
     if 'access_key' in session:
-        user = generateUserFromSession(session)
+        user = utils.generateUserFromSession(session)
         return render_template('home.html', logged = True, user=user)
     else:
         auth, authUrl = utils.getAuthURL()
@@ -29,7 +29,7 @@ def callback():
     session['access_secret'] = access_token[1]
 
     # Also store some user info in the session 
-    user = getDetails(session)
+    user = utils.getDetails(session)
     session['screen_name'] = user.screen_name
     session['profile_image'] = user.profile_image_url
     session['name'] = user.name
