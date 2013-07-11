@@ -42,7 +42,9 @@ def logout():
     session.pop('access_secret')
     return redirect(url_for('home'))
 
-
+@app.route("/cookies/")
+def cookies():
+    return render_template('cookies.html')
 
 # Main code
 if __name__ == '__main__':

@@ -17,7 +17,7 @@
     <h2>Getting started</h2>
     <p>To take part in the experiment, please sign in using your Twitter account.</p> 
     <button class="sign_in"><a href="{{ auth }}">sign in with Twitter</a></button>
-
+    <p class="cookie">By signing in, you agree to our use of cookies to keep track of your session as you proceed through the questions. For more information, please see our <a href="/cookies">cookie policy</a>.</p>
     {% endif %}
 </section>
 
@@ -32,18 +32,15 @@
     <h3>Sign in</h3>
     <p>To take part in this experiment, please sign in with Twitter.</p>
     <button class="sign_in"><a href="{{ auth }}">sign in</a></button>
-
+    <p class="cookie">By signing in, you agree to our <a href="/cookies">cookie policy</a>.</p>
     {% endif %}
 </aside>
 
-<aside>
-    <h3>Project information</h3>
-    <p>This experiment is part of a research project by Will Webberley.</p>
-    <ul>
-        <li class="web"><p><a href="http://flyingsparx.net/research">Research information</a></p></li>
-        <li class="twitter"><p>Tweet me <a href="https://twitter.com/flyingSparx">@flyingSparx</a></p></li>
-        <li class="mail"><p><a href="mailto:W.M.Webberley@cs.cardiff.ac.uk">W.M.Webberley@cs.cardiff.ac.uk</a></p></li>
-    </ul>
-</aside>
-
+{% endblock %}
+{% block scripts%}
+$(".sign_in").click(function(){
+    var a_link = $(this).find('a');
+    var url = a_link.attr('href');
+    window.location = url;
+});
 {% endblock %}

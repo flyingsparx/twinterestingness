@@ -10,7 +10,6 @@
     <link href='http://fonts.googleapis.com/css?family=PT+Sans' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Alef' rel='stylesheet' type='text/css'>
     <link href="/static/css/styles.css" rel="stylesheet" type="text/css"/>
-    <script type="text/javascript" src="/static/js/jquery.js"></script>		
 </head>
 
 <body>
@@ -24,10 +23,27 @@
         {% block body %}
 
         {% endblock %}
+
+        <aside>
+        <h3>Project information</h3>
+        <p>This experiment is part of a research project by Will Webberley.</p>
+        <ul>
+            <li class="web"><p><a href="http://flyingsparx.net/research">Research information</a></p></li>
+            <li class="twitter"><p>Tweet me <a href="https://twitter.com/flyingSparx">@flyingSparx</a></p></li>
+            <li class="mail"><p><a href="mailto:W.M.Webberley@cs.cardiff.ac.uk">W.M.Webberley@cs.cardiff.ac.uk</a></p></li>
+        </ul>
+        </aside>
 </div>
 
+<script type="text/javascript" src="/static/js/jquery.js"></script>		
 <script type="text/javascript" src="/static/js/easing.js"></script>
 <script type="text/javascript" src="/static/js/color.js"></script>
 <script type="text/javascript" src="/static/js/main.js"></script>
+
+<script type="text/javascript">
+{% block scripts %}
+
+{% endblock %}
+</script>
 </body>
 </html>
