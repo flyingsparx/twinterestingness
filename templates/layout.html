@@ -14,7 +14,7 @@
 
 <body>
 <header>
-    <div id="title">Twinterest</div>
+    <div id="title">twinterest</div>
     <a href="http://cardiff.ac.uk" target="_blank"><img src="/static/media/cardiff.png" alt="Cardiff University" /></a>	
 </header>
 
@@ -24,15 +24,26 @@
 
         {% endblock %}
 
+{% if not user == False %}
+        <aside>
+            <img src="{{ user.profile_image }}" class="profile-image" />            <p>{{user.name }}<br />
+            <a target="_blank" href="https://twitter.com/{{ user.screen_name }}">@{{ user.screen_name }}</a></p>
+            <p class="logout"><a href="/logout">logout</a></p>
+        </aside>
+{% endif %}
+
+
         <aside>
         <h3>Project information</h3>
         <p>This experiment is part of a research project by Will Webberley.</p>
         <ul>
-            <li class="web"><p><a href="http://flyingsparx.net/research">Research information</a></p></li>
-            <li class="twitter"><p>Tweet me <a href="https://twitter.com/flyingSparx">@flyingSparx</a></p></li>
+            <li class="web"><p><a target="_blank" href="http://flyingsparx.net/research">Research information</a></p></li>
+            <li class="twitter"><p>Tweet me <a target="_blank" href="https://twitter.com/flyingSparx">@flyingSparx</a></p></li>
             <li class="mail"><p><a href="mailto:W.M.Webberley@cs.cardiff.ac.uk">W.M.Webberley@cs.cardiff.ac.uk</a></p></li>
+            <li class="web"><p>Cookie <a href="/cookies">policy</a></p></li>
         </ul>
         </aside>
+        <div style="clear:both"></div>
 </div>
 
 <script type="text/javascript" src="/static/js/jquery.js"></script>		

@@ -2,39 +2,55 @@
 {% block body %}
 
 <section>
-    <h1>Welcome to Twinterestingness</h1>
+    <h1>What do you find Twinteresting?</h1>
     <p>Twinterestingness is an experiment by <a href="http://cs.cardiff.ac.uk" target="_blank">Cardiff School of Computer Science &amp; Informatics</a> from <a href="http://cardifff.ac.uk">Cardiff University</a>.</p>
 
+    {% if logged == True %}
+        {% if user.friends_count < 10 %}
+        <h2>Sorry, but you are ineligible to take part</h2>
+        <p>Unfortunately you only follow {{ user.friends_count }} users. You need to be following at least 10 other Twitter users in order to take part.</h2>
+        <p>Please come back once you have reached this number, though!</p>
+        {% else %}
+        <h2>Thank you for taking part</h2>
+        <p>You can logout at any time during the experiment using the links to the side.</p>
+       <p>If you have done this experiment before, then <a href="#start">skip ahead</a> to start. Otherwise, we recommend reading the brief instructions below before starting.</p>
+       
+       <h2>Brief instructions</h2> 
+      <p>You will be guided through questions of two types; one based around user timelines of some people that you follow, and the other based on your home timeline of potentially <i>everyone</i> you follow.</p>
+      <p>Individual instructions will be provided for each of the types of questions when you get there as well so that you know what to do.</p>
+      <p>In each case, we ask you to select the Tweets from the timelines that you find the most interesting. For each question you should select at least one Tweet (there is no upper limit).</p>
+      <h3>General notes</h3>
+      <ul> 
+        <li>Please do not use your browser's back or forward buttons (since these will probably load cached versions of the page) - buttons will be provided for your navigation</li>
+        <li>If you want to leave at any time, then please click the logout button to the side. If you do this, you will have to sign in and start from the beginning if you wish to come back.</li>
+        <li>Don't worry if you navigate away. We will remember your position in the questions when you get back!</li>
+      </ul>
+              
+
+       <a id="start"><h2>Get started!</h2></a>
+       <button class="start">start experiment</button>
+        {% endif %}
+    {% else %}
     <h2>The experiment</h2>
     <p>The idea of the experiment is to get an idea of the content that <i> you</i> find interesting from the users that you follow. Thus, to take part in the experiment, you need to have a <a href="https://twitter.com" target="_blank">Twitter</a> account and be following at least 10 users.</p>
     <p>If you take part in the experiment, you will be asked a series of questions in which we ask you to rate the Tweets from your Twitter friends based on how <i>interesting</i> you find them. We'll tell you more about it before you start the experiment.</p>
-
-    {% if logged == True %}
-    <h2>Thank you for signing in</h2>
-    <p>
-
-    {% else %}
     <h2>Getting started</h2>
-    <p>To take part in the experiment, please sign in using your Twitter account.</p> 
+    <p>To take part in the experiment, please sign in using your Twitter account. Please note that we never see your email address or Twitter password at any stage.</p> 
     <button class="sign_in"><a href="{{ auth }}">sign in with Twitter</a></button>
     <p class="cookie">By signing in, you agree to our use of cookies to keep track of your session as you proceed through the questions. For more information, please see our <a href="/cookies">cookie policy</a>.</p>
     {% endif %}
 </section>
 
+
+{% if logged == False %}
 <aside>
-    {% if logged == True %}
-    <h3>Thank you for signing in</h3>
-
-    {{ user.name }}<br />
-    <img style="width:100px;height:100px" src="{{ user.profile_image }}" />
-
-    {% else %}
     <h3>Sign in</h3>
     <p>To take part in this experiment, please sign in with Twitter.</p>
     <button class="sign_in"><a href="{{ auth }}">sign in</a></button>
     <p class="cookie">By signing in, you agree to our <a href="/cookies">cookie policy</a>.</p>
-    {% endif %}
 </aside>
+{% endif %}
+
 
 {% endblock %}
 {% block scripts%}

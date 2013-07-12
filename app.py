@@ -1,15 +1,24 @@
-from flask import Flask, url_for, render_template, request, session, escape, redirect
+from flask import Flask, url_for, render_template, request, session, escape, redirect, g
 import json, urllib2, sqlite3, os, time, datetime
 import utils
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('TWINTEREST_SECRET_KEY')
 
+@app.before_request
+def before_request():
+     if 'access_key' in session:
+        try:
+            g.user = utils.generateUserFromSession(session)
+        except:
+            g.user=None
+     else:
+         g.user = None
+
 @app.route("/")
 def home():
-    if 'access_key' in session:
-        user = utils.generateUserFromSession(session)
-        return render_template('home.html', logged = True, user=user)
+    if not g.user == None:
+           return render_template('home.html', logged = True, user=user)
     else:
         auth, authUrl = utils.getAuthURL()
         session['request_token_key'] = auth.request_token.key
@@ -36,6 +45,14 @@ def callback():
     session['friends_count'] = user.friends_count
     return redirect(url_for('home'))
 
+@app.route("/question/<question>/")
+def question(question):
+    user = checkLogged()
+    if not user == False:
+        return render_template("question.html")
+    else:
+        return redirect(url_for('home'))
+
 @app.route("/logout/")
 def logout():
     session.pop('access_key')
@@ -43,8 +60,9 @@ def logout():
     return redirect(url_for('home'))
 
 @app.route("/cookies/")
-def cookies():
-    return render_template('cookies.html')
+def cookies():   
+    print g.user.screen_name 
+    return render_template('cookies.html', user=g.user)
 
 # Main code
 if __name__ == '__main__':
