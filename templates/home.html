@@ -5,7 +5,7 @@
     <h1>What do you find Twinteresting?</h1>
     <p>Twinterestingness is an experiment by <a href="http://cs.cardiff.ac.uk" target="_blank">Cardiff School of Computer Science &amp; Informatics</a> from <a href="http://cardifff.ac.uk">Cardiff University</a>.</p>
 
-    {% if logged == True %}
+    {% if not user == None %}
         {% if user.friends_count < 10 %}
         <h2>Sorry, but you are ineligible to take part</h2>
         <p>Unfortunately you only follow {{ user.friends_count }} users. You need to be following at least 10 other Twitter users in order to take part.</h2>
@@ -29,7 +29,8 @@
 
        <a id="start"><h2>Get started!</h2></a>
        <button class="start">start experiment</button>
-        {% endif %}
+    {% endif %}
+    
     {% else %}
     <h2>The experiment</h2>
     <p>The idea of the experiment is to get an idea of the content that <i> you</i> find interesting from the users that you follow. Thus, to take part in the experiment, you need to have a <a href="https://twitter.com" target="_blank">Twitter</a> account and be following at least 10 users.</p>
@@ -42,7 +43,7 @@
 </section>
 
 
-{% if logged == False %}
+{% if user == None %}
 <aside>
     <h3>Sign in</h3>
     <p>To take part in this experiment, please sign in with Twitter.</p>

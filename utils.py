@@ -51,6 +51,12 @@ def getDetails(session):
     user = api.verify_credentials()
     return user
 
+# Get the authenticated user's home timeline (Tweets from self and friends)
+def getHomeTimelime(session):
+    api = getAuthenticatedAPI(session)
+    timeline = api.home_timeline()
+    return timeline
+
 
 ## UTILITY METHODS AND CLASSES ##
 
