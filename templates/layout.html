@@ -24,7 +24,7 @@
 
         {% endblock %}
 
-{% if not user == False %}
+{% if not user == None %}
         <aside>
             <img src="{{ user.profile_image }}" class="profile-image" />            <p>{{user.name }}<br />
             <a target="_blank" href="https://twitter.com/{{ user.screen_name }}">@{{ user.screen_name }}</a></p>

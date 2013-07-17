@@ -42,19 +42,30 @@ def getAuthenticatedAPI(session):
     auth.set_access_token(key, secret)
     return tweepy.API(auth)
 
+def getMyAuthenticatedAPI():
+    key = os.environ.get('twinterest_access_token_flyingsparx')
+    secret = os.environ.get('twinterest_access_secret_flyingsparx')
+    auth = tweepy.OAuthHandler(CONSUMER_TOKEN, CONSUMER_SECRET)
+    auth.set_access_token(key, secret)
+    return tweepy.API(auth)    
 
 ## TWITTER API METHODS ##
 
 # Get a representation of the User who has logged in
 def getDetails(session):
-    api = getAuthenticatedAPI(session)
+#    api = getAuthenticatedAPI(session)
+    api = getMyAuthenticatedAPI()
     user = api.verify_credentials()
     return user
 
 # Get the authenticated user's home timeline (Tweets from self and friends)
-def getHomeTimelime(session):
-    api = getAuthenticatedAPI(session)
+def getHomeTimeline(session):
+    print "\nHere\n"
+#    api = getAuthenticatedAPI(session)
+    api = getMyAuthenticatedAPI()
+    print api
     timeline = api.home_timeline()
+    print timeline
     return timeline
 
 

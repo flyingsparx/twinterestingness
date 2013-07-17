@@ -3,11 +3,45 @@
 
 <section>
     <h1>Question 1</h1>
+    <p>The Tweets below have been taken from your public timeline (i.e. the Tweets you'd see if you were currently signed into Twitter's homepage).</p>
+    <p>In this question, please select the Tweet(s) from the timeline that you find interesting.</p>
     
+    <div id="timeline">
+
     {% for tweet in timeline %}
-        <p>hello</p>
+        <article id="{{tweet.id}}">
+            <img src="{{ tweet.user.profile_image_url }}" class="profile-image" />
+            <p class="screen-name">@{{ tweet.user.screen_name}}
+                <span class="name">{{ tweet.user.name }}</span></p>
+            <p class="text">{{ tweet.text }}</p>
+            <p class="info"><label>Retweeted</label>{{ tweet.retweet_count }}</p>
+            <div style="clear:both"></div>
+        </article>
     {% endfor %}
 
+    </div>
+
 </section> 
+
+{% endblock %}
+
+{% block scripts %}
+var selectedArray = new Array();
+
+function calculateArray(){
+    
+}
+
+$("article").click(function(){
+    var id = $(this).attr("id");
+    if ($.inArray(id, selectedArray)){
+        $(this).css({'background':'none'});   
+    }
+    else{
+        $(this).css({'background':'rgba(0,0,0,0.1)'});
+    }
+});
+
+
 
 {% endblock %}

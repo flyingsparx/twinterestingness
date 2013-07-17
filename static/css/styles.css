@@ -203,3 +203,53 @@ p.cookie{
     margin-left:90px;
     padding-top:5px;
 }
+
+#timeline{
+    border-top:1px solid #A80000;
+    padding-top:20px;
+    margin-top:20px;
+}
+
+#timeline article{
+    margin-bottom:20px;
+    padding-bottom:8px;
+    padding-right:5px;
+    border-bottom:1px solid #ccc;
+    min-height:80px;
+    cursor:pointer;
+}
+#timeline article:hover{background:rgba(0,0,0,0.02);}
+
+#timeline article .profile-image{
+    width:50px;
+}
+
+#timeline article .screen-name{
+    color:#bbb;
+    margin-bottom:5px;
+    margin-top:3px;
+}
+
+#timeline article .screen-name .name{
+    margin-left:10px;
+    color:rgba(0,0,0,0.4);
+    font-size:13px;
+}
+
+#timeline article .text{
+    margin-left:75px;
+}
+
+#timeline article .info{
+    float:right;
+    color:#aaa;
+    margin-bottom:0px;
+}
+
+#timeline article .info label{
+    text-transform: uppercase;
+    color:#A80000;
+    margin-right:10px;
+    font-size:11px;
+}
+

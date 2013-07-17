@@ -16,7 +16,8 @@ def before_request():
         except:
             g.user=None
      else:
-         g.user = None
+#         g.user = None
+         g.user = 1
 
 # Root for twinterest.flyingsparx.net
 # if user variable set, show standard homepage.
@@ -69,7 +70,6 @@ def callback():
 def question(q):
     if not g.user == None:
         t = utils.getHomeTimeline(session)
-        print t
         return render_template("question.html", user=g.user, timeline = t)
     else:
         return redirect(url_for('home'))
