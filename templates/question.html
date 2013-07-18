@@ -2,46 +2,76 @@
 {% block body %}
 
 <section>
-    <h1>Question 1</h1>
-    <p>The Tweets below have been taken from your public timeline (i.e. the Tweets you'd see if you were currently signed into Twitter's homepage).</p>
+    {% if timeline == None %}
+
+    <h1>There was an issue generating your question</h1>
+    <h2>Sorry for the inconvenience.</h2>
+    <p>Please return to the <a href="/">homepage</a> to start again.</p>
+
+    {% else %}
+    <h1>Question {{ question }}</h1>
+    <p>The Tweets below have been taken from your home timeline (i.e. the Tweets you'd see if you were currently signed into Twitter's homepage).</p>
     <p>In this question, please select the Tweet(s) from the timeline that you find interesting.</p>
     
     <div id="timeline">
 
+    {% autoescape false %}
     {% for tweet in timeline %}
-        <article id="{{tweet.id}}">
+        <article data-id="{{tweet.id}}" data-user="{{tweet.user.id}}">
             <img src="{{ tweet.user.profile_image_url }}" class="profile-image" />
             <p class="screen-name">@{{ tweet.user.screen_name}}
                 <span class="name">{{ tweet.user.name }}</span></p>
-            <p class="text">{{ tweet.text }}</p>
+            <p class="text">{{ tweet.display_text }}</p>
             <p class="info"><label>Retweeted</label>{{ tweet.retweet_count }}</p>
             <div style="clear:both"></div>
         </article>
     {% endfor %}
-
+    {% endautoescape %}
     </div>
+
+    {% if question < 5 %}
+        <button class="previous">Previous</button>
+    {% endif %}
+    {% if question < 5 %}
+        <button class="next">Next</button>
+    {% endif %}
+
+    {% endif %}
 
 </section> 
 
 {% endblock %}
 
 {% block scripts %}
-var selectedArray = new Array();
+var selectedTweets = new Array();
+var selectedUsers = new Array();
 
 function calculateArray(){
-    
+    selectedArray = new Array();
+    selectedUsers = new Array();
+    var counter = 0;
+    $("article").each(function(){
+        if($(this).hasClass("selected")){
+            selectedTweets[counter] = $(this).attr("data-id");
+            selectedUsers[counter] = $(this).attr("data-user");
+            counter ++;
+            $(this).css({'background':'rgba(0,0,0,0.1)'});
+        }
+        else{
+            $(this).css({'background':'none'});   
+        }
+    });
+    console.log(selectedArray);
 }
 
 $("article").click(function(){
-    var id = $(this).attr("id");
-    if ($.inArray(id, selectedArray)){
-        $(this).css({'background':'none'});   
+    if($(this).hasClass("selected")){
+        $(this).removeClass("selected");
     }
     else{
-        $(this).css({'background':'rgba(0,0,0,0.1)'});
+        $(this).addClass("selected");
     }
+    calculateArray();
 });
-
-
 
 {% endblock %}

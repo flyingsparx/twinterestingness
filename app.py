@@ -69,8 +69,8 @@ def callback():
 @app.route("/question/<q>/")
 def question(q):
     if not g.user == None:
-        t = utils.getHomeTimeline(session)
-        return render_template("question.html", user=g.user, timeline = t)
+        t = utils.getTimelineForQuestion(q, session)
+        return render_template("question.html", user=g.user, timeline = t, question = int(q))
     else:
         return redirect(url_for('home'))
 
@@ -90,8 +90,13 @@ def logout():
     session.pop('access_secret')
     return redirect(url_for('home'))
 
-
-
+# /api:
+# Requests to POST data to the app:
+@app.route("/api/<question>/")
+def api(question):
+    next_q = utils.processRequest(question, request, session)
+    timeline = utils.getHomeTimeline(session)
+    return render_template("question.html", user=g.user, timeline = t)
 
 
 # Main code (if invoked from Python at command line for development server)

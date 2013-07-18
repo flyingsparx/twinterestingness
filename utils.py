@@ -63,9 +63,25 @@ def getHomeTimeline(session):
     print "\nHere\n"
 #    api = getAuthenticatedAPI(session)
     api = getMyAuthenticatedAPI()
-    print api
     timeline = api.home_timeline()
-    print timeline
+    for tweet in timeline:
+        words = []
+        tokens = tweet.text.split(" ")
+        for token in tokens:
+            word = ""
+            if token.startswith("http"):
+#                word = '<a href="'+token+'">'+token+'</a>'
+                word = '<span class="link">'+token+'</span>'
+            elif token.startswith("@"):
+#                word = '<a href="https://twitter.com/'+token.replace("@","")+'">'+token+'</a>'
+                word = '<span class="link">'+token+'</span>'
+            elif token.startswith("#"):
+#                word = '<a href="https://twitter.com/search?q=%23'+token.replace("#","")+'&src=hash">'+token+'</a>'
+                word = '<span class="link">'+token+'</span>'
+            else:
+                word = token
+            words.append(word)
+        tweet.display_text = " ".join(words)
     return timeline
 
 
@@ -80,6 +96,20 @@ def generateUserFromSession(session):
     friends_count = session['friends_count']
     user = User(name, screen_name, profile_image, friends_count)
     return user
+
+def getTimelineForQuestion(question, session):
+    try:
+        if int(question) == 1:
+            return getHomeTimeline(session)
+        else:
+            return None
+    except:
+        return None
+
+# Handle POST requests to the system:
+def processRequest(question, request, session):
+    interesting_ids = request.form["interesting_ids"]
+    interesting_users = request.form["interesting_users"]
 
 
 # Own implementation of User object containing only the information 

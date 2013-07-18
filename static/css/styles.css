@@ -186,6 +186,36 @@ button.start{
     background-size:25px;
     padding-left:30px;
 }
+
+button.previous{
+   background:url('/static/media/left.png') white;
+   background-position:5px center;
+   background-repeat:no-repeat;
+   background-size:25px;
+   float:left;
+   color:#ccc;
+   border:1px solid #00BFFF;
+}
+
+button.next{
+   background:url('/static/media/right.png') white;
+   background-position:5px center;
+   background-repeat:no-repeat;
+   background-size:25px;
+   float:right;
+   color:#ccc;
+   border:1px solid #00BFFF;
+} 
+
+button.logout{
+    font-size:15px;
+    padding:4px 7px;
+    background: rgba(0,0,0,0.4);
+    float:right;
+    margin:0px;
+    margin-top:5px;
+}
+
 p.cookie{
     font-size:11px;
 }
@@ -194,14 +224,6 @@ p.cookie{
     width:80px;
     float:left;
     margin-right:15px;
-}
-
-.logout{
-    font-size:12px;
-    margin-bottom:0px;
-    border-top:1px solid #ddd;
-    margin-left:90px;
-    padding-top:5px;
 }
 
 #timeline{
@@ -238,6 +260,9 @@ p.cookie{
 
 #timeline article .text{
     margin-left:75px;
+}
+#timeline article .text .link{
+    color:#00BFFF;
 }
 
 #timeline article .info{
