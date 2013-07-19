@@ -1,5 +1,6 @@
 import tweepy
 import os
+from models import *
 
 # Load the application's consumer token and secret from 
 # environment variables.
@@ -110,34 +111,3 @@ def getTimelineForQuestion(question, session):
 def processRequest(question, request, session):
     interesting_ids = request.form["interesting_ids"]
     interesting_users = request.form["interesting_users"]
-
-
-# Initialize the system's databases. Called upon initial start of the app.
-def initDB():
-    con = s.connect("static/data/twinterest.db")
-    c = con.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS session(
-            session_id TEXT,
-            timestamp INTEGER,
-            question INTEGER)''')
-    c.execute('''CREATE TABLE IF NOT EXISTS user(
-            session_id TEXT,
-            user_id INTEGER,
-            username TEXT,
-            name TEXT,
-            profile_image TEXT,
-            friend_count INTEGER,
-            follower_count INTEGER)''')
-
-    con.commit()
-
-
-# Own implementation of User object containing only the information 
-# we need. friends_count stored as the experiment will not work if 
-# user has 0 friends.
-class User:
-    def __init__(self, name, screen_name, profile_image, friends_count):
-        self.name = name
-        self.screen_name = screen_name
-        self.profile_image = profile_image
-        self.friends_count = friends_count 

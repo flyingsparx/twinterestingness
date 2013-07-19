@@ -2,6 +2,7 @@ from flask import Flask, url_for, render_template, request, session, escape, red
 import json, urllib2, sqlite3, os, time, datetime
 import utils
 import database
+from models import *
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('TWINTEREST_SECRET_KEY')
@@ -11,14 +12,13 @@ database.initDB()
 # If so, generate a global user object from the user's session
 @app.before_request
 def before_request():
-     if 'access_key' in session:
+    if 'access_key' in session:
         try:
-            g.user = utils.generateUserFromSession(session)
+            g.user = database.getSession(session['id']).user
         except:
             g.user=None
-     else:
-#         g.user = None
-         g.user = 1
+    else:
+        g.user = None
 
 # Root for twinterest.flyingsparx.net
 # if user variable set, show standard homepage.
@@ -42,25 +42,28 @@ def home():
 # If verifier not set, redirect back home unauthenticated.
 @app.route("/callback")
 def callback():
+    # Check verifier exists...
     verifier = request.args['oauth_verifier']
     if verifier is None:
         return redirect(url_for('home'))
+    
+    # If it does, get the request key and token and generate an access token:
     request_key = session['request_token_key']
     request_secret = session['request_token_secret']
     access_token = utils.getAccessToken(verifier, request_key, request_secret)
-    # Remove request token info and replace with access token info
+
+    # Request information on the authorised user:
+    user = utils.getDetails(session)
+    # Create a 'session' instance for this user and save the user details:
+    sess = database.createSession(user)
+
+    # Remove request token info and replace with access token and our session  info
     session.pop('request_token_key')
     session.pop('request_token_secret')
     session['access_key'] = access_token[0]
     session['access_secret'] = access_token[1]
-
-    # Also store some user info in the session so that we can display
-    # some relevant user info (without spamming the API)
-    user = utils.getDetails(session)
-    session['screen_name'] = user.screen_name
-    session['profile_image'] = user.profile_image_url
-    session['name'] = user.name
-    session['friends_count'] = user.friends_count
+    session['id'] = sess.id
+    
     return redirect(url_for('home'))
 
 
@@ -89,6 +92,7 @@ def cookies():
 def logout():
     session.pop('access_key')
     session.pop('access_secret')
+    session.pop('id')
     return redirect(url_for('home'))
 
 # /api:
@@ -99,6 +103,16 @@ def api(question):
     timeline = utils.getHomeTimeline(session)
     return render_template("question.html", user=g.user, timeline = t)
 
+
+
+if app.debug is not True:
+    import logging
+    from logging.handlers import RotatingFileHandler
+    file_handler = RotatingFileHandler('python.log', maxBytes=1024 * 1024 * 100, backupCount=20)
+    file_handler.setLevel(logging.ERROR)
+    formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+    file_handler.setFormatter(formatter)
+    app.logger.addHandler(file_handler)
 
 # Main code (if invoked from Python at command line for development server)
 if __name__ == '__main__':
