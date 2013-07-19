@@ -1,10 +1,11 @@
 from flask import Flask, url_for, render_template, request, session, escape, redirect, g
 import json, urllib2, sqlite3, os, time, datetime
 import utils
+import database
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('TWINTEREST_SECRET_KEY')
-
+database.initDB()
 
 # On every request, check if user is logged in.
 # If so, generate a global user object from the user's session
