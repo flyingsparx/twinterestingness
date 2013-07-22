@@ -90,13 +90,13 @@ def getHomeTimeline(session):
 
 # Create and return a User object based on the details stored in
 # the user's session variables.
-def generateUserFromSession(session):
-    name = session['name']
-    screen_name = session['screen_name']
-    profile_image = session['profile_image']
-    friends_count = session['friends_count']
-    user = User(name, screen_name, profile_image, friends_count)
-    return user
+#def generateUserFromSession(session):
+#    name = session['name']
+#    screen_name = session['screen_name']
+#    profile_image = session['profile_image']
+#    friends_count = session['friends_count']
+#    user = User(name, screen_name, profile_image, friends_count)
+#    return user
 
 def getTimelineForQuestion(question, session):
     try:
@@ -106,8 +106,3 @@ def getTimelineForQuestion(question, session):
             return None
     except:
         return None
-
-# Handle POST requests to the system:
-def processRequest(question, request, session):
-    interesting_ids = request.form["interesting_ids"]
-    interesting_users = request.form["interesting_users"]

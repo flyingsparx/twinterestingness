@@ -16,7 +16,7 @@
     <div id="timeline">
 
     {% autoescape false %}
-    {% for tweet in timeline %}
+    {% for tweet in timeline.tweets %}
         <article data-id="{{tweet.id}}" data-user="{{tweet.user.id}}">
             <img src="{{ tweet.user.profile_image_url }}" class="profile-image" />
             <p class="screen-name">@{{ tweet.user.screen_name}}
@@ -62,6 +62,24 @@ function calculateArray(){
         }
     });
     console.log(selectedArray);
+}
+
+function submitResponse(){
+    $.ajax({
+        type : 'POST',
+        url : '/api/update-question/{{ question }}',
+        dataType : 'json',
+        data : {
+            tweet_ids: ids,
+            selected: selected
+        },
+        success : function(data){
+
+        },
+        error : function(XMLHttpRequest, textStatus, errorThrown){
+
+        }
+    });
 }
 
 $("article").click(function(){

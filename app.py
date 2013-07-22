@@ -1,6 +1,6 @@
 from flask import Flask, url_for, render_template, request, session, escape, redirect, g
 import json, urllib2, sqlite3, os, time, datetime
-import utils
+import twitter_utils as utils
 import database
 from models import *
 
@@ -14,11 +14,15 @@ database.initDB()
 def before_request():
     if 'access_key' in session:
         try:
-            g.user = database.getSession(session['id']).user
+            g.sess = database.getSession(session['id'])
+            g.user = g.sess.user
+
         except:
-            g.user=None
+            g.user = None
+            g.sess = None
     else:
         g.user = None
+        g.sess = None
 
 # Root for twinterest.flyingsparx.net
 # if user variable set, show standard homepage.
@@ -73,14 +77,52 @@ def callback():
 @app.route("/question/<q>/")
 def question(q):
     if not g.user == None:
-        t = utils.getTimelineForQuestion(q, session)
-        return render_template("question.html", user=g.user, timeline = t, question = int(q))
-    else:
-        return redirect(url_for('home'))
+        try:
+            requested_question = int(q)
+        except:
+            return redirect(url_for('home'))
+
+        on_question = database.getQuestionNumber(g.sess)
+        if requested_question > on_question:
+            timeline = database.getTimeline(g.sess, on_question)
+        if requested_question <= on_question:
+            timeline = database.getTimeline(g.sess, requested_question)
+        if requested_question == (on_question+1):
+            timeline = utils.getTimelineForQuestion(requested_question, session)
+            requested_question = database.createQuestion(g.sess, timeline)
+
+        return render_template("question.html", user=g.user, timeline = timeline, question = requested_question)
+        
+
+# /api/update-question (Asynchronous / API calls only):
+# Requests to POST data updates for questions.
+# Return JSON as requests to this will be made asynchronously:
+@app.route("/api/update-question/<q>/")
+def api(q):
+    if not g.user == None:  
+        try:
+            q = int(q)
+            if q > database.getQuestionNumber(g.sess):
+                raise Exception
+        except:
+            return json.dumps({"error":1,"info":"Invalid question"})
+        
+        # First, get list of all Tweets and a list of selections (0 or 1)
+        # (Assumes same order for both!):
+        tweet_ids = request.form["tweet_ids"].split(",")
+        selected = request.form["selected"].split(",")
+        combined_dict = {}
+        for i, tweet_id in enumerate(tweet_ids):
+            combined_dict[int(tweet_id)] = int(selected[i])
+
+        outcome = database.updateTimeline(g.sess, q, combined_dict)
+        if outcome == False:
+            return json.dumps({"error":1,"info":"Error storing details"})
+        return json.dumps({"error":0})
 
 
 # /cookies:
-# Display a cookie information page.
+# Display a cookie information page:
 @app.route("/cookies/")
 def cookies():   
     return render_template('cookies.html', user=g.user)
@@ -95,16 +137,14 @@ def logout():
     session.pop('id')
     return redirect(url_for('home'))
 
-# /api:
-# Requests to POST data to the app:
-@app.route("/api/<question>/")
-def api(question):
-    next_q = utils.processRequest(question, request, session)
-    timeline = utils.getHomeTimeline(session)
-    return render_template("question.html", user=g.user, timeline = t)
 
+##
+## MAIN APPLICATION CODE
+##
 
-
+# Handle error logging. 
+# Necessary since it's awkward testing Twitter interactions (callbacks,
+# authorisation, etc.) on ports other than 80 (i.e. in developnent mode)
 if app.debug is not True:
     import logging
     from logging.handlers import RotatingFileHandler

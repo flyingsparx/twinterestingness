@@ -148,6 +148,12 @@ ul li.mail{
     background-repeat:no-repeat;
     background-position:left center;
 }
+ul li.source{
+    background:url('/static/media/braces.png');
+    background-size:18px;
+    background-repeat:no-repeat;
+    background-position:left center;
+}
 
 button{
     font-size:25px;

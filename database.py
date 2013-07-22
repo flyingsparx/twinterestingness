@@ -41,8 +41,8 @@ def getSession(sess_id):
 # Useful if user navigates away and returns.
 def getQuestionNumber(sess):
     con, c = connect()
-    row = c.execute("SELECT question FROM session WHERE session_id='"+sess.id).fetchone()
-    return row[0]
+    row = c.execute("SELECT question FROM session WHERE session_id='"+sess.id+"'").fetchone()
+    return int(row[0])
 
 
 # Save a new question's timeline to DB, incrementing the sessions current
@@ -50,7 +50,7 @@ def getQuestionNumber(sess):
 # Returns the number of the created question
 def createQuestion(sess, timeline):
     con, c = connect()
-    c.execute("UPDATE session SET question=question+1 WHERE session_id="+str(sess.id))
+    c.execute("UPDATE session SET question=question+1 WHERE session_id='"+str(sess.id)+"'")
     con.commit()
     question_num = getQuestionNumber(sess)
 
@@ -65,7 +65,7 @@ def createQuestion(sess, timeline):
             verified = 1
         
         c.execute("INSERT INTO timeline VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)" % 
-                (session_id,question_num,tweet.id,tweet.text,tweet.retweet_count,tweet.user.id,
+                (sess.id,question_num,tweet.id,tweet.text,tweet.retweet_count,tweet.user.id,
                 tweet.user.screen_name,tweet.user.profile_image_url,
                 tweet.user.name,tweet.user.followers_count,tweet.user.friends_count,
                 verified,tweet.user.statuses_count,tweet.user.favourites_count,
@@ -77,9 +77,9 @@ def createQuestion(sess, timeline):
 
 # Get the timeline for a given session's question. Will return the stored
 # answers if the question had previously been asked already.
-def getTimeline(sess, question):
+def getTimeline(sess, question_num):
     con, c = connect()
-    result = c.execute("SELECT * FROM timeline WHERE session_id="+str(sess.id)+" and question="+str(question.number)).fetchall()
+    result = c.execute("SELECT * FROM timeline WHERE session_id='"+str(sess.id)+"'and question="+str(question_num)).fetchall()
 
     timeline = Timeline()
     for row in result:
@@ -91,11 +91,14 @@ def getTimeline(sess, question):
 # Update which Tweets of the timeline have been selected as interesting by the user   
 # Accepts dict consisting of tweet_id => selected(0,1)
 def updateTimeline(sess,question,selected):
-    con, c = connect()
-    for tweet in selected:
-        c.execute("UPDATE timeline SET selected="+str(elected[tweet])+" WHERE session_id="+str(sess.id)+" AND question="+str(question.number)+" AND tweet_id="+str(tweet))
-    con.commit()
-    
+    try:
+        con, c = connect()
+        for tweet in selected:
+            c.execute("UPDATE timeline SET selected="+str(elected[tweet])+" WHERE session_id="+str(sess.id)+" AND question="+str(question.number)+" AND tweet_id="+str(tweet))
+        con.commit()
+    except:
+        return False
+    return True 
         
 
 # Manage the connect to the database and return the connection
@@ -125,7 +128,7 @@ def initDB():
             favourites_count INTEGER,
             listed_count INTEGER,
             verified INTEGER)''')
-    c.execute('''CREATE TABLE IF NOT EXISTS tineline(
+    c.execute('''CREATE TABLE IF NOT EXISTS timeline(
             session_id TEXT,
             question INTEGER,
             tweet_id INTEGER,
