@@ -94,7 +94,7 @@ def updateTimeline(sess,question,selected):
     try:
         con, c = connect()
         for tweet in selected:
-            c.execute("UPDATE timeline SET selected="+str(selected[tweet])+" WHERE session_id="+str(sess.id)+" AND question="+str(question.number)+" AND tweet_id="+str(tweet))
+            c.execute("UPDATE timeline SET selected="+str(selected[tweet])+" WHERE session_id='"+str(sess.id)+"' AND question="+str(question)+" AND tweet_id="+str(tweet))
         con.commit()
     except:
         return False

@@ -57,16 +57,17 @@ def callback():
     request_secret = session['request_token_secret']
     access_token = utils.getAccessToken(verifier, request_key, request_secret)
 
-    # Request information on the authorised user:
-    user = utils.getDetails(session)
-    # Create a 'session' instance for this user and save the user details:
-    sess = database.createSession(user)
-
     # Remove request token info and replace with access token and our session  info
     session.pop('request_token_key')
     session.pop('request_token_secret')
     session['access_key'] = access_token[0]
     session['access_secret'] = access_token[1]
+
+    # Request information on the authorised user:
+    user = utils.getDetails(session)
+
+    # Create a 'session' instance for this user and save the user details:
+    sess = database.createSession(user)
     session['id'] = sess.id
     
     return redirect(url_for('home'))
@@ -138,7 +139,10 @@ def api(q):
 # Display a 'thank you' message after questions have been completed:
 @app.route("/finish/")
 def finish():
-    return "Thanks for taking part."
+    session.pop('access_key')
+    session.pop('access_secret')
+    session.pop('id')
+    return render_template('finish.html', user=None)
 
 
 # /cookies:

@@ -25,7 +25,7 @@
             <img src="{{ tweet.user.profile_image }}" class="profile-image" />
             <p class="screen-name">@{{ tweet.user.screen_name}}
                 <span class="name">{{ tweet.user.name }}</span></p>
-            <p class="text">{{ tweet.text }}</p>
+            <p class="text">{{ tweet.getDisplayText() }}</p>
             <p class="info"><label>Retweeted</label>{{ tweet.retweet_count }}</p>
             <div style="clear:both"></div>
         </article>
@@ -96,12 +96,11 @@ function submitResponse(next_question){
             selected: selected
         },
         success : function(data){
-        //    window.location = "/question/"+next_question;
             if(data.error == 0){
-                alert("success");
+                window.location = "/question/"+next_question;
             }
             else{
-                alert(data.info);
+                alert(data.info+"\nPlease contact me!");
             }
         },
         error : function(XMLHttpRequest, textStatus, errorThrown){
@@ -148,7 +147,7 @@ $(document).ready(function(){
         var next_question = {{ question }} - 1;
         submitResponse(next_question);        
     });
-
+    calculateArray();    
 
 });
 

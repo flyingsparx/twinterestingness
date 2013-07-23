@@ -24,7 +24,19 @@ class Tweet:
         self.retweet_count = retweet_count
         self.user = user
         self.selected = selected
-        
+
+    def getDisplayText(self):
+        tokens = self.text.split(" ")
+        words = []
+        for token in tokens:
+            word = ""
+            if token.startswith("http") or token.startswith("@") or token.startswith("#"):
+                word = '<span class="link">'+token+'</span>'
+            else:
+                word = token
+            words.append(word)
+        return " ".join(words)
+            
 class Timeline:
     def __init__(self):
         self.tweets = []

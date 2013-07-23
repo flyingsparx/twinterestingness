@@ -7,6 +7,7 @@ from models import *
 CONSUMER_TOKEN = os.environ.get('twinteresting_token')
 CONSUMER_SECRET = os.environ.get('twinteresting_secret')
 
+
 ## AUTHORISATION METHODS ##
 
 # Get the OAuth authorisation URL from Twitter. Users taking
@@ -43,61 +44,37 @@ def getAuthenticatedAPI(session):
     auth.set_access_token(key, secret)
     return tweepy.API(auth)
 
-def getMyAuthenticatedAPI():
-    key = os.environ.get('twinterest_access_token_flyingsparx')
-    secret = os.environ.get('twinterest_access_secret_flyingsparx')
-    auth = tweepy.OAuthHandler(CONSUMER_TOKEN, CONSUMER_SECRET)
-    auth.set_access_token(key, secret)
-    return tweepy.API(auth)    
+#def getMyAuthenticatedAPI():
+#    key = os.environ.get('twinterest_access_token_flyingsparx')
+#    secret = os.environ.get('twinterest_access_secret_flyingsparx')
+#    auth = tweepy.OAuthHandler(CONSUMER_TOKEN, CONSUMER_SECRET)
+#    auth.set_access_token(key, secret)
+#    return tweepy.API(auth)    
+
 
 ## TWITTER API METHODS ##
 
 # Get a representation of the User who has logged in
 def getDetails(session):
-#    api = getAuthenticatedAPI(session)
-    api = getMyAuthenticatedAPI()
+    api = getAuthenticatedAPI(session)
     user = api.verify_credentials()
     return user
 
 # Get the authenticated user's home timeline (Tweets from self and friends)
 def getHomeTimeline(session):
-    print "\nHere\n"
-#    api = getAuthenticatedAPI(session)
-    api = getMyAuthenticatedAPI()
+    api = getAuthenticatedAPI(session)
     timeline = api.home_timeline()
-    for tweet in timeline:
-        words = []
-        tokens = tweet.text.split(" ")
-        for token in tokens:
-            word = ""
-            if token.startswith("http"):
-#                word = '<a href="'+token+'">'+token+'</a>'
-                word = '<span class="link">'+token+'</span>'
-            elif token.startswith("@"):
-#                word = '<a href="https://twitter.com/'+token.replace("@","")+'">'+token+'</a>'
-                word = '<span class="link">'+token+'</span>'
-            elif token.startswith("#"):
-#                word = '<a href="https://twitter.com/search?q=%23'+token.replace("#","")+'&src=hash">'+token+'</a>'
-                word = '<span class="link">'+token+'</span>'
-            else:
-                word = token
-            words.append(word)
-        tweet.display_text = " ".join(words)
+    return timeline
+
+def getUserTimeline(session, user):
+    api = getAuthenticatedAPI(session)
+    timeline = api.user_timeline(id=user.id)
     return timeline
 
 
-## UTILITY METHODS AND CLASSES ##
+## UTILITY METHODS  ##
 
-# Create and return a User object based on the details stored in
-# the user's session variables.
-#def generateUserFromSession(session):
-#    name = session['name']
-#    screen_name = session['screen_name']
-#    profile_image = session['profile_image']
-#    friends_count = session['friends_count']
-#    user = User(name, screen_name, profile_image, friends_count)
-#    return user
-
+# Return the timeline for the specified question
 def getTimelineForQuestion(question, session):
     if int(question) == 1:
         return getHomeTimeline(session)
