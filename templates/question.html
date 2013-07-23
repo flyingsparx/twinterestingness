@@ -17,11 +17,15 @@
 
     {% autoescape false %}
     {% for tweet in timeline.tweets %}
-        <article data-id="{{tweet.id}}" data-user="{{tweet.user.id}}">
-            <img src="{{ tweet.user.profile_image_url }}" class="profile-image" />
+        <article data-id="{{tweet.id}}" data-user="{{tweet.user.id}}"
+        {% if tweet.selected == 1 %}
+        class="selected"
+        {% endif %}
+        >
+            <img src="{{ tweet.user.profile_image }}" class="profile-image" />
             <p class="screen-name">@{{ tweet.user.screen_name}}
                 <span class="name">{{ tweet.user.name }}</span></p>
-            <p class="text">{{ tweet.display_text }}</p>
+            <p class="text">{{ tweet.text }}</p>
             <p class="info"><label>Retweeted</label>{{ tweet.retweet_count }}</p>
             <div style="clear:both"></div>
         </article>
@@ -40,6 +44,20 @@
 
 </section> 
 
+<aside>
+    <h3>Help</h3>
+    <ul>
+        <li>To select a Tweet, simply click it.</li>
+        <li>To unselect a Tweet, click it again.</li>
+        <li>When satisfied, click the 'Next' button at the bottom to move to the next question.</li>
+        <li>Your responses will be saved when you click the 'Next' button.</li>
+    </ul>
+</aside>
+<aside>
+    <h3>Question navigation</h3>
+    <p><span id="num_tweets">0</span> Tweets selected</p>
+    <button class="previous">prev</button><button class="next">next</button>
+</aside>
 {% endblock %}
 
 {% block scripts %}
@@ -61,35 +79,77 @@ function calculateArray(){
             $(this).css({'background':'none'});   
         }
     });
-    console.log(selectedArray);
+    $("#num_tweets").html(counter);
 }
 
-function submitResponse(){
+function submitResponse(next_question){
+    var arrays = getArraysForPosting();
+    tweet_ids = arrays[0].join(",");
+    selected = arrays[1].join(",");
+
     $.ajax({
         type : 'POST',
-        url : '/api/update-question/{{ question }}',
+        url : '/api/update-question/{{ question }}/',
         dataType : 'json',
         data : {
-            tweet_ids: ids,
+            tweet_ids: tweet_ids,
             selected: selected
         },
         success : function(data){
-
+        //    window.location = "/question/"+next_question;
+            if(data.error == 0){
+                alert("success");
+            }
+            else{
+                alert(data.info);
+            }
         },
         error : function(XMLHttpRequest, textStatus, errorThrown){
-
+            console.log(textStatus+": "+errorThrown);
         }
     });
 }
 
-$("article").click(function(){
-    if($(this).hasClass("selected")){
-        $(this).removeClass("selected");
-    }
-    else{
-        $(this).addClass("selected");
-    }
-    calculateArray();
+function getArraysForPosting(){
+    var tweets = new Array();
+    var selected = new Array();
+    var counter = 0;
+
+    $("article").each(function(){
+        tweets[counter] = $(this).attr("data-id");
+        if($(this).hasClass("selected")){
+            selected[counter] = 1;
+        }
+        else{
+            selected[counter] = 0;
+        }
+        counter ++;
+    });
+    return [tweets, selected];
+}
+
+$(document).ready(function(){
+    $("article").click(function(){
+        if($(this).hasClass("selected")){
+            $(this).removeClass("selected");
+        }
+        else{
+            $(this).addClass("selected");
+        }
+        calculateArray();
+    });
+
+    $(".next").click(function(){
+        var next_question = {{ question }} + 1;
+        submitResponse(next_question);        
+    });
+
+    $(".previous").click(function(){
+        var next_question = {{ question }} - 1;
+        submitResponse(next_question);        
+    });
+
+
 });
 
 {% endblock %}

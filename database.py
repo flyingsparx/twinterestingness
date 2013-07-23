@@ -64,12 +64,12 @@ def createQuestion(sess, timeline):
         if tweet.user.verified:
             verified = 1
         
-        c.execute("INSERT INTO timeline VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)" % 
-                (sess.id,question_num,tweet.id,tweet.text,tweet.retweet_count,tweet.user.id,
+        c.execute("INSERT INTO timeline VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", 
+                [sess.id,question_num,tweet.id,tweet.text,tweet.retweet_count,tweet.user.id,
                 tweet.user.screen_name,tweet.user.profile_image_url,
                 tweet.user.name,tweet.user.followers_count,tweet.user.friends_count,
                 verified,tweet.user.statuses_count,tweet.user.favourites_count,
-                tweet.user.listed_count,0))
+                tweet.user.listed_count,0])
     con.commit()
 
     q = Question(sess,question_num,myTimeline)
@@ -83,8 +83,8 @@ def getTimeline(sess, question_num):
 
     timeline = Timeline()
     for row in result:
-        user = User(row['user_id'],row['user_name'],row['user_username'],row['user_profile_image'],row['user_friends'],row['user_followers'],row['user_statuses_count'],row['user_favourites_count'],row['listed_count'],row['verified'])
-        tweet = Tweet(row['tweet_id'],row['tweet_text'],row['retweet_count'],user,row['selected'])
+        user = User(row['user_id'],row['user_name'],row['user_username'],row['user_profile_image'],row['user_friends'],row['user_followers'],row['user_statuses_count'],row['user_favourites_count'],row['user_listed_count'],row['user_verified'])
+        tweet = Tweet(row['tweet_id'],row['tweet_text'],row['tweet_retweet_count'],user,row['selected'])
         timeline.add_tweet(tweet)
     return timeline
     
@@ -94,7 +94,7 @@ def updateTimeline(sess,question,selected):
     try:
         con, c = connect()
         for tweet in selected:
-            c.execute("UPDATE timeline SET selected="+str(elected[tweet])+" WHERE session_id="+str(sess.id)+" AND question="+str(question.number)+" AND tweet_id="+str(tweet))
+            c.execute("UPDATE timeline SET selected="+str(selected[tweet])+" WHERE session_id="+str(sess.id)+" AND question="+str(question.number)+" AND tweet_id="+str(tweet))
         con.commit()
     except:
         return False

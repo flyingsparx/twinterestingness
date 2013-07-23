@@ -99,10 +99,7 @@ def getHomeTimeline(session):
 #    return user
 
 def getTimelineForQuestion(question, session):
-    try:
-        if int(question) == 1:
-            return getHomeTimeline(session)
-        else:
-            return None
-    except:
+    if int(question) == 1:
+        return getHomeTimeline(session)
+    else:
         return None

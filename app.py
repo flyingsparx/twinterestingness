@@ -30,7 +30,8 @@ def before_request():
 @app.route("/")
 def home():
     if not g.user == None:
-           return render_template('home.html',  user=g.user)
+           question_num = database.getQuestionNumber(g.sess)
+           return render_template('home.html',  user=g.user, question = question_num)
     else:
         auth, authUrl = utils.getAuthURL()
         # set request token key and secret in the session variables so we
@@ -81,15 +82,25 @@ def question(q):
             requested_question = int(q)
         except:
             return redirect(url_for('home'))
+        if q == 0:
+             return redirect(url_for('home'))
 
+        timeline = None
         on_question = database.getQuestionNumber(g.sess)
-        if requested_question > on_question:
-            timeline = database.getTimeline(g.sess, on_question)
+        print on_question
+        print requested_question
+        if requested_question > on_question+1:
+            if on_question == 0:
+                return redirect(url_for('home'))
+            return redirect("/question/"+str(on_question))
         if requested_question <= on_question:
             timeline = database.getTimeline(g.sess, requested_question)
         if requested_question == (on_question+1):
             timeline = utils.getTimelineForQuestion(requested_question, session)
-            requested_question = database.createQuestion(g.sess, timeline)
+            if timeline == None:
+                return redirect(url_for("finish"))
+            database.createQuestion(g.sess, timeline)
+            timeline = database.getTimeline(g.sess, requested_question)
 
         return render_template("question.html", user=g.user, timeline = timeline, question = requested_question)
         
@@ -97,7 +108,7 @@ def question(q):
 # /api/update-question (Asynchronous / API calls only):
 # Requests to POST data updates for questions.
 # Return JSON as requests to this will be made asynchronously:
-@app.route("/api/update-question/<q>/")
+@app.route("/api/update-question/<q>/", methods=['POST'])
 def api(q):
     if not g.user == None:  
         try:
@@ -119,6 +130,15 @@ def api(q):
         if outcome == False:
             return json.dumps({"error":1,"info":"Error storing details"})
         return json.dumps({"error":0})
+    else:
+        return json.dumps({"error":1,"info":"Authorisation error"})
+
+
+# /finish:
+# Display a 'thank you' message after questions have been completed:
+@app.route("/finish/")
+def finish():
+    return "Thanks for taking part."
 
 
 # /cookies:
