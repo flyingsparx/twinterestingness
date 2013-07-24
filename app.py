@@ -83,27 +83,38 @@ def question(q):
             requested_question = int(q)
         except:
             return redirect(url_for('home'))
-        if q == 0:
+        if requested_question  == 0:
              return redirect(url_for('home'))
 
         timeline = None
         on_question = database.getQuestionNumber(g.sess)
-        print on_question
-        print requested_question
+        
+        # If requested question too far ahead, return to current question
+        # (unless questions not yet started, in which case redirect to 'home'):
         if requested_question > on_question+1:
             if on_question == 0:
                 return redirect(url_for('home'))
             return redirect("/question/"+str(on_question))
+
+        # If requested question has already been done (or is being done), load
+        # the state of the timeline from database and show that:
+        # (Occurs if 'prev' button pressed or a page reload)
         if requested_question <= on_question:
             timeline = database.getTimeline(g.sess, requested_question)
+
+        # If requested question is the one after the current one, then generate a 
+        # new timeline from Twitter, store it and show it:
+        # (Occurs if 'next' button is pressed)
         if requested_question == (on_question+1):
-            timeline = utils.getTimelineForQuestion(requested_question, session)
+            friends = database.getFriends(g.sess)
+            timeline = utils.getTimelineForQuestion(requested_question, session, friends)
             if timeline == None:
                 return redirect(url_for("finish"))
             database.createQuestion(g.sess, timeline)
             timeline = database.getTimeline(g.sess, requested_question)
-
-        return render_template("question.html", user=g.user, timeline = timeline, question = requested_question)
+        
+        description = utils.getDescriptionForQuestion(requested_question)
+        return render_template("question.html", user=g.user, timeline = timeline, question = requested_question, description = description)
         
 
 # /api/update-question (Asynchronous / API calls only):
@@ -127,8 +138,8 @@ def api(q):
         for i, tweet_id in enumerate(tweet_ids):
             combined_dict[int(tweet_id)] = int(selected[i])
 
-        outcome = database.updateTimeline(g.sess, q, combined_dict)
-        if outcome == False:
+        success = database.updateTimeline(g.sess, q, combined_dict)
+        if success == False:
             return json.dumps({"error":1,"info":"Error storing details"})
         return json.dumps({"error":0})
     else:

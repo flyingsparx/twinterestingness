@@ -21,8 +21,17 @@ def createSession(user):
         verified = 1
 
     c.execute("INSERT INTO user VALUES(?,?,?,?,?,?,?,?,?,?,?)", [str(session_id), user.id, user.screen_name, user.name, user.profile_image_url, user.friends_count, user.followers_count, user.statuses_count, user.favourites_count, user.listed_count, verified])
-    con.commit()
     
+    # Insert top 100 friends into database:
+    if not user.friends == None: # 'friends' field created upon callback from Twitter
+        for friend in user.friends:
+            verified = 0
+            if friend.verified:
+                verified = 1
+            c.execute("INSERT INTO friend VALUES(?,?,?,?,?,?,?,?,?,?,?,?)", [str(session_id), user.id, friend.id, friend.screen_name, friend.name, friend.profile_image_url, friend.friends_count, friend.followers_count, friend.statuses_count, friend.favourites_count, friend.listed_count, verified])
+        
+
+    con.commit()
     s = Session(session_id, user, timestamp)
     return s
 
@@ -32,7 +41,7 @@ def getSession(sess_id):
     con, c = connect()
     r1 = c.execute("SELECT * FROM session WHERE session_id='"+str(sess_id)+"'").fetchone()
     r = c.execute("SELECT * FROM user WHERE session_id='"+str(sess_id)+"'").fetchone()
-    user = User(r['user_id'],r['name'],r['username'],r['profile_image'],r['friend_count'],r['follower_count'],r['statuses_count'],r['favourites_count'],r['listed_count'],r['verified'])
+    user = User(r['user_id'],r['name'],r['username'],r['profile_image'],r['friends_count'],r['followers_count'],r['statuses_count'],r['favourites_count'],r['listed_count'],r['verified'])
     sess = Session(sess_id,user,r1['timestamp'])
     return sess
 
@@ -83,7 +92,7 @@ def getTimeline(sess, question_num):
 
     timeline = Timeline()
     for row in result:
-        user = User(row['user_id'],row['user_name'],row['user_username'],row['user_profile_image'],row['user_friends'],row['user_followers'],row['user_statuses_count'],row['user_favourites_count'],row['user_listed_count'],row['user_verified'])
+        user = User(row['user_id'],row['user_name'],row['user_username'],row['user_profile_image'],row['user_friends_count'],row['user_followers_count'],row['user_statuses_count'],row['user_favourites_count'],row['user_listed_count'],row['user_verified'])
         tweet = Tweet(row['tweet_id'],row['tweet_text'],row['tweet_retweet_count'],user,row['selected'])
         timeline.add_tweet(tweet)
     return timeline
@@ -101,6 +110,18 @@ def updateTimeline(sess,question,selected):
     return True 
         
 
+# Retrieve the friends of the authenticated user from the database from when
+# they authenticated with Twitter.
+# Friends returned as a list of User objects:
+def getFriends(sess):
+    con, c = connect()
+    result = c.execute("SELECT * FROM friend WHERE session_id = '"+sess.id+"' AND id = "+str(sess.user.id)).fetchall()
+    friends = []
+    for row in result:
+        user = User(row['friend_id'],row['name'],row['username'],row['profile_image'],row['friends_count'],row['followers_count'],row['statuses_count'],row['favourites_count'],row['listed_count'],row['verified'])
+        friends.append(user)
+    return friends
+
 # Manage the connect to the database and return the connection
 # and cursor objects
 def connect():
@@ -112,6 +133,19 @@ def connect():
 # Initialize the system's databases. Called upon initial start of the app.
 def initDB():
     con, c = connect()
+    c.execute(''' CREATE TABLE IF NOT EXISTS friend(
+            session_id TEXT,
+            id INTEGER,
+            friend_id INTEGER,
+            username TEXT,
+            name TEXT,
+            profile_image TEXT,
+            friends_count INTEGER,
+            followers_count INTEGER,
+            statuses_count INTEGER,
+            favourites_count INTEGER,
+            listed_count INTEGER,
+            verified INTEGER)''')
     c.execute('''CREATE TABLE IF NOT EXISTS session(
             session_id TEXT,
             timestamp INTEGER,
@@ -122,8 +156,8 @@ def initDB():
             username TEXT,
             name TEXT,
             profile_image TEXT,
-            friend_count INTEGER,
-            follower_count INTEGER,
+            friends_count INTEGER,
+            followers_count INTEGER,
             statuses_count INTEGER,
             favourites_count INTEGER,
             listed_count INTEGER,
@@ -138,8 +172,8 @@ def initDB():
             user_username INTEGER,
             user_profile_image TEXT,
             user_name TEXT,
-            user_followers INTEGER,
-            user_friends INTEGER,
+            user_followers_count INTEGER,
+            user_friends_count INTEGER,
             user_verified INTEGER,
             user_statuses_count INTEGER,
             user_favourites_count INTEGER,

@@ -1,5 +1,5 @@
 import tweepy
-import os
+import os, random
 from models import *
 
 # Load the application's consumer token and secret from 
@@ -54,10 +54,14 @@ def getAuthenticatedAPI(session):
 
 ## TWITTER API METHODS ##
 
-# Get a representation of the User who has logged in
+# Get a representation of the User who has logged in.
+# Also, get a list of 100 recent friends which we can store for creating
+# timelines for questions later:
 def getDetails(session):
     api = getAuthenticatedAPI(session)
     user = api.verify_credentials()
+    friend_ids = api.friends_ids(user_id=user.id,count=100)
+    user.friends = api.lookup_users(user_ids=friend_ids)
     return user
 
 # Get the authenticated user's home timeline (Tweets from self and friends)
@@ -75,8 +79,29 @@ def getUserTimeline(session, user):
 ## UTILITY METHODS  ##
 
 # Return the timeline for the specified question
-def getTimelineForQuestion(question, session):
-    if int(question) == 1:
-        return getHomeTimeline(session)
-    else:
-        return None
+def getTimelineForQuestion(question, session, friends):
+    timeline = None
+    if question == 1:
+        timeline = getHomeTimeline(session)
+    elif question == 2:
+        numFriends = len(friends)
+        mostFollowersFirst = sorted(friends, key=lambda user: user.followers_count)
+        #randInt = random.randint(0,numFriends-1)
+        tineline = getUserTimeline(session, mostFollowersFirst[-1])
+    elif question == 3:
+        numFriends = len(friends)
+        mostFollowersFirst = sorted(friends, key=lambda user: user.followers_count)
+        #randInt = random.randint(0,numFriends-1)
+        timeline = getUserTimeline(session, mostFollowersFirst[-2])
+    return timeline
+
+def getDescriptionForQuestion(question):
+    if question == 1:
+        return "This question contains Tweets from your 'home timeline'. This is the timeline you'd see if you were logged into Twitter right now, so it contains Tweets from several different users."
+    if question == 2:
+        return "This timeline contains Tweets from only one of your Twitter friends."
+    if question == 3:
+        return "This timeline contains Tweets from only one of your Twitter friends."
+    
+
+

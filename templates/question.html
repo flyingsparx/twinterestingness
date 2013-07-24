@@ -10,9 +10,12 @@
 
     {% else %}
     <h1>Question {{ question }}</h1>
-    <p>The Tweets below have been taken from your home timeline (i.e. the Tweets you'd see if you were currently signed into Twitter's homepage).</p>
     <p>In this question, please select the Tweet(s) from the timeline that you find interesting.</p>
-    
+    <p>Please select <strong>at least one</strong> Tweet from the timeline. There is no upper limit.</p>
+
+    <h2>Timeline Description</h2>
+    <p>{{ description }}</p>
+        
     <div id="timeline">
 
     {% autoescape false %}
