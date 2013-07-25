@@ -244,6 +244,13 @@ p.cookie{
     vertical-align:middle;
 }
 
+#page-loading{
+    width:400px;
+    height:30px;
+    display:none;
+    margin:30px auto;
+}
+
 #loading{
     width:80%;
     display:inline-block;

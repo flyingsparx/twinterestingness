@@ -66,7 +66,7 @@ def createQuestion(sess, timeline):
 
     myTimeline = Timeline() # make our timeline object
     for tweet in timeline:
-        if not tweet.text.startswith("@"):
+        if not tweet.text.startswith("@") and not tweet.text.startswith("RT"):
         
             myTweet = Tweet(tweet.id,tweet.text,tweet.retweet_count,tweet.user,0)
             myTimeline.add_tweet(myTweet)

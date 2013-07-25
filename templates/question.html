@@ -108,6 +108,7 @@ function submitResponse(next_question){
                 success : function(data){
                     if(data.error == 0){
                         $("#wrapper").fadeOut(300, function(){
+                            $("#page-loading").css({'display':'block'});
                             window.location = "/question/"+next_question;
                         });
                     }

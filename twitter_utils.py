@@ -44,13 +44,6 @@ def getAuthenticatedAPI(session):
     auth.set_access_token(key, secret)
     return tweepy.API(auth)
 
-#def getMyAuthenticatedAPI():
-#    key = os.environ.get('twinterest_access_token_flyingsparx')
-#    secret = os.environ.get('twinterest_access_secret_flyingsparx')
-#    auth = tweepy.OAuthHandler(CONSUMER_TOKEN, CONSUMER_SECRET)
-#    auth.set_access_token(key, secret)
-#    return tweepy.API(auth)    
-
 
 ## TWITTER API METHODS ##
 
@@ -132,8 +125,3 @@ def getDescriptionForQuestion(question):
         return "This question contains Tweets from your 'home timeline'. This is the timeline you'd see if you were logged into Twitter right now, so it contains Tweets from several different users."
     if question >= 2:
         return "This timeline contains Tweets from only one of your Twitter friends."
-    if question == 3:
-        return "This timeline contains Tweets from only one of your Twitter friends."
-    
-
-
