@@ -194,24 +194,30 @@ button.start{
 }
 
 button.previous{
-   background:url('/static/media/left.png') white;
+   background:url('/static/media/left.gif') #A80000;
    background-position:5px center;
    background-repeat:no-repeat;
    background-size:25px;
    float:left;
    color:#ccc;
-   border:1px solid #00BFFF;
+   border:1px solid #A80000;
+   cursor:pointer;
+   opacity:0.6;
 }
+button.previous:hover{opacity:1.0;}
 
 button.next{
-   background:url('/static/media/right.png') white;
+   background:url('/static/media/right.gif') #A80000;
    background-position:5px center;
    background-repeat:no-repeat;
    background-size:25px;
    float:right;
    color:#ccc;
-   border:1px solid #00BFFF;
+   border:1px solid #A80000;
+   cursor:pointer;
+   opacity:0.6;
 } 
+button.next:hover{opacity:1.0;}
 
 button.logout{
     font-size:15px;
@@ -236,6 +242,13 @@ p.cookie{
     font-size:30px;
     margin-right:10px;
     vertical-align:middle;
+}
+
+#loading{
+    width:80%;
+    display:inline-block;
+    margin:10px auto;
+    display:none;
 }
 
 #timeline{

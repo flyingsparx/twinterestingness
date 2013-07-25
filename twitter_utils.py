@@ -78,27 +78,59 @@ def getUserTimeline(session, user):
 
 ## UTILITY METHODS  ##
 
+# Return a randomly chosen friend using roulette wheel selection.
+# Selection is weighted towards users at the START of the list.
+# Used for selecting a friend of the user for displaying the timeline
+# in a question:
+def getWeightedChoice(friends):
+    choices = []
+    weight = len(friends) # initial start weight
+    for friend in friends:
+        choices.append((friend, weight))
+        weight = weight - 1
+    
+    # Now do weighted selection:
+    total = sum(w for c, w in choices)
+    r = random.uniform(0, total)
+    upto = 0
+    for c, w in choices:
+        if upto + w > r:
+            return c
+        upto += w
+    assert False, "Shouldn't get here"
+
+
 # Return the timeline for the specified question
-def getTimelineForQuestion(question, session, friends):
+def getTimelineForQuestion(question, session, user):
+    mostFollowersFirst = sorted(user.friends, key=lambda user: user.followers_count)
     timeline = None
     if question == 1:
         timeline = getHomeTimeline(session)
     elif question == 2:
-        numFriends = len(friends)
-        mostFollowersFirst = sorted(friends, key=lambda user: user.followers_count)
-        #randInt = random.randint(0,numFriends-1)
-        tineline = getUserTimeline(session, mostFollowersFirst[-1])
+        friend = mostFollowersFirst[-1]
+        timeline = getUserTimeline(session, friend)
     elif question == 3:
-        numFriends = len(friends)
-        mostFollowersFirst = sorted(friends, key=lambda user: user.followers_count)
-        #randInt = random.randint(0,numFriends-1)
-        timeline = getUserTimeline(session, mostFollowersFirst[-2])
+        friend = getWeightedChoice(mostFollowersFirst)
+        timeline = getUserTimeline(session, friend)
+    elif question == 4:
+        friend = mostFollowersFirst[-2]
+        timeline = getUserTimeline(session, friend)
+    elif question == 5:
+        friend = getWeightedChoice(mostFollowersFirst)
+        timeline = getUserTimeline(session, friend)
+    elif question == 6:
+        friend = getWeightedChoice(mostFollowersFirst)
+        timeline = getUserTimeline(session, friend)
+
     return timeline
+
+def getQuestionCount():
+    return 6
 
 def getDescriptionForQuestion(question):
     if question == 1:
         return "This question contains Tweets from your 'home timeline'. This is the timeline you'd see if you were logged into Twitter right now, so it contains Tweets from several different users."
-    if question == 2:
+    if question >= 2:
         return "This timeline contains Tweets from only one of your Twitter friends."
     if question == 3:
         return "This timeline contains Tweets from only one of your Twitter friends."

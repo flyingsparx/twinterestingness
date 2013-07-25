@@ -106,15 +106,18 @@ def question(q):
         # new timeline from Twitter, store it and show it:
         # (Occurs if 'next' button is pressed)
         if requested_question == (on_question+1):
-            friends = database.getFriends(g.sess)
-            timeline = utils.getTimelineForQuestion(requested_question, session, friends)
+            timeline = utils.getTimelineForQuestion(requested_question, session, g.user)
             if timeline == None:
                 return redirect(url_for("finish"))
             database.createQuestion(g.sess, timeline)
             timeline = database.getTimeline(g.sess, requested_question)
         
+        questions = utils.getQuestionCount()
         description = utils.getDescriptionForQuestion(requested_question)
-        return render_template("question.html", user=g.user, timeline = timeline, question = requested_question, description = description)
+        return render_template("question.html", user=g.user, timeline = timeline, question = requested_question, description = description, question_count = questions)
+
+    else:
+        return redirect(url_for("home"))
         
 
 # /api/update-question (Asynchronous / API calls only):
@@ -135,8 +138,13 @@ def api(q):
         tweet_ids = request.form["tweet_ids"].split(",")
         selected = request.form["selected"].split(",")
         combined_dict = {}
+        total_selected = 0
         for i, tweet_id in enumerate(tweet_ids):
             combined_dict[int(tweet_id)] = int(selected[i])
+            total_selected += int(selected[i])
+        if total_selected == 0:
+            return json.dumps({"error":1,"info":"Please select at least one Tweet"})
+
 
         success = database.updateTimeline(g.sess, q, combined_dict)
         if success == False:
@@ -150,10 +158,13 @@ def api(q):
 # Display a 'thank you' message after questions have been completed:
 @app.route("/finish/")
 def finish():
-    session.pop('access_key')
-    session.pop('access_secret')
-    session.pop('id')
-    return render_template('finish.html', user=None)
+    try:
+        session.pop('access_key')
+        session.pop('access_secret')
+        session.pop('id')
+        return render_template('finish.html', user=None)
+    except:
+        return redirect(url_for("home"))
 
 
 # /cookies:

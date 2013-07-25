@@ -43,6 +43,7 @@ def getSession(sess_id):
     r = c.execute("SELECT * FROM user WHERE session_id='"+str(sess_id)+"'").fetchone()
     user = User(r['user_id'],r['name'],r['username'],r['profile_image'],r['friends_count'],r['followers_count'],r['statuses_count'],r['favourites_count'],r['listed_count'],r['verified'])
     sess = Session(sess_id,user,r1['timestamp'])
+    sess.user.friends = getFriends(sess)
     return sess
 
 # Get the current question for this user's session.
@@ -65,21 +66,23 @@ def createQuestion(sess, timeline):
 
     myTimeline = Timeline() # make our timeline object
     for tweet in timeline:
-        myTweet = Tweet(tweet.id,tweet.text,tweet.retweet_count,tweet.user,0)
-        myTimeline.add_tweet(myTweet)
-
-        # Turn verified status into integer for storage (0=false,1=true)
-        verified = 0
-        if tweet.user.verified:
-            verified = 1
+        if not tweet.text.startswith("@"):
         
-        c.execute("INSERT INTO timeline VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", 
-                [sess.id,question_num,tweet.id,tweet.text,tweet.retweet_count,tweet.user.id,
-                tweet.user.screen_name,tweet.user.profile_image_url,
-                tweet.user.name,tweet.user.followers_count,tweet.user.friends_count,
-                verified,tweet.user.statuses_count,tweet.user.favourites_count,
-                tweet.user.listed_count,0])
-    con.commit()
+            myTweet = Tweet(tweet.id,tweet.text,tweet.retweet_count,tweet.user,0)
+            myTimeline.add_tweet(myTweet)
+            
+            # Turn verified status into integer for storage (0=false,1=true)
+            verified = 0
+            if tweet.user.verified:
+                verified = 1
+            
+            c.execute("INSERT INTO timeline VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", 
+                    [sess.id,question_num,tweet.id,tweet.text,tweet.retweet_count,tweet.user.id,
+                    tweet.user.screen_name,tweet.user.profile_image_url,
+                    tweet.user.name,tweet.user.followers_count,tweet.user.friends_count,
+                    verified,tweet.user.statuses_count,tweet.user.favourites_count,
+                    tweet.user.listed_count,0])
+        con.commit()
 
     q = Question(sess,question_num,myTimeline)
     return q

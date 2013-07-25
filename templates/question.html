@@ -36,13 +36,6 @@
     {% endautoescape %}
     </div>
 
-    {% if question < 5 %}
-        <button class="previous">Previous</button>
-    {% endif %}
-    {% if question < 5 %}
-        <button class="next">Next</button>
-    {% endif %}
-
     {% endif %}
 
 </section> 
@@ -52,14 +45,27 @@
     <ul>
         <li>To select a Tweet, simply click it.</li>
         <li>To unselect a Tweet, click it again.</li>
-        <li>When satisfied, click the 'Next' button at the bottom to move to the next question.</li>
-        <li>Your responses will be saved when you click the 'Next' button.</li>
+        <li>When satisfied, click the 'next' button to  move to the next question.</li>
+        <li>Your responses will be saved when you click one of the 'next' or 'prev' buttons.</li>
+        <li>You can navigate through the questions and change your responses at any point during the experiment.</li>
     </ul>
 </aside>
 <aside>
     <h3>Question navigation</h3>
     <p><span id="num_tweets">0</span> Tweets selected</p>
-    <button class="previous">prev</button><button class="next">next</button>
+
+    <div id="buttons">
+        {% if question > 1 %}
+            <button class="previous">prev</button>
+        {% endif %}
+        {% if question < question_count %}
+            <button class="next">next</button>
+        {% else %}
+            <button class="start" style="float:right">finish</button>
+        {% endif %}
+     </div>
+     <img id="loading" src="/static/media/loading.gif" alt="loading" />
+
 </aside>
 {% endblock %}
 
@@ -89,26 +95,35 @@ function submitResponse(next_question){
     var arrays = getArraysForPosting();
     tweet_ids = arrays[0].join(",");
     selected = arrays[1].join(",");
-
-    $.ajax({
-        type : 'POST',
-        url : '/api/update-question/{{ question }}/',
-        dataType : 'json',
-        data : {
-            tweet_ids: tweet_ids,
-            selected: selected
-        },
-        success : function(data){
-            if(data.error == 0){
-                window.location = "/question/"+next_question;
-            }
-            else{
-                alert(data.info+"\nPlease contact me!");
-            }
-        },
-        error : function(XMLHttpRequest, textStatus, errorThrown){
-            console.log(textStatus+": "+errorThrown);
-        }
+    $("#buttons").fadeOut(200, function(){
+        $("#loading").fadeIn(200, function(){
+            $.ajax({
+                type : 'POST',
+                url : '/api/update-question/{{ question }}/',
+                dataType : 'json',
+                data : {
+                    tweet_ids: tweet_ids,
+                    selected: selected
+                },
+                success : function(data){
+                    if(data.error == 0){
+                        $("#wrapper").fadeOut(300, function(){
+                            window.location = "/question/"+next_question;
+                        });
+                    }
+                    else{
+                        alert(data.info+"\n\nPlease contact me if you think this error is wrong!");
+                        $("#loading").fadeOut(100);
+                        $("#buttons").fadeIn(100);
+                    }
+                },
+                error : function(XMLHttpRequest, textStatus, errorThrown){
+                    console.log(textStatus+": "+errorThrown);
+                    $("#loading").fadeOut(100);
+                    $("#buttons").fadeIn(100);
+                }
+            });
+        });
     });
 }
 
@@ -131,6 +146,7 @@ function getArraysForPosting(){
 }
 
 $(document).ready(function(){
+    $("#wrapper").css({'display':'none'});
     $("article").click(function(){
         if($(this).hasClass("selected")){
             $(this).removeClass("selected");
@@ -146,12 +162,18 @@ $(document).ready(function(){
         submitResponse(next_question);        
     });
 
+    $(".start").click(function(){
+        var next_question = {{ question }} + 1;
+        submitResponse(next_question);        
+    });
+
     $(".previous").click(function(){
         var next_question = {{ question }} - 1;
         submitResponse(next_question);        
     });
     calculateArray();    
-
+    
+    $("#wrapper").fadeIn(400);
 });
 
 {% endblock %}
