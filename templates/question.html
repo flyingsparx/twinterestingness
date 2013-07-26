@@ -1,6 +1,22 @@
 {% extends "layout.html" %}
 {% block body %}
 
+<div id="modal-nav">
+ <p><span class="num_tweets">0</span> Tweets selected</p>
+
+ <div class="buttons">
+        {% if question > 1 %}
+            <button class="previous">previous question</button>
+        {% endif %}
+        {% if question < question_count %}
+            <button class="next">next question</button>
+        {% else %}
+            <button class="start" style="margin:0px;float:right">finish</button>
+        {% endif %}
+    </div>
+
+</div>
+
 <section>
     {% if timeline == None %}
     <h1>Oops!</h1>
@@ -11,7 +27,7 @@
     <h1>Question {{ question }} of {{ question_count }}</h1>
     <p>In this question, please select the Tweet(s) from the timeline that you find interesting.</p>
     <p>Please select <strong>at least one</strong> Tweet from the timeline. There is no upper limit.</p>
-    <p>If none of the Tweets are interesting to you (why do you even follow the user?!), then select Tweet(s) that are the <strong>most</strong> interesting to you.</p>
+    <p>If none of the Tweets are interesting to you, then select Tweet(s) that are the <strong>most</strong> interesting to you.</p>
 
     <h2>Timeline Description</h2>
     <p>{{ description }}</p>
@@ -48,7 +64,7 @@
 </aside>
 <aside>
     <h3>Question navigation</h3>
-    <p><span id="num_tweets">0</span> Tweets selected</p>
+    <p><span class="num_tweets">0</span> Tweets selected</p>
 
     <div id="buttons">
         {% if question > 1 %}
@@ -61,7 +77,7 @@
         {% endif %}
      </div>
      <img id="loading" src="/static/media/loading.gif" alt="loading" />
-
+   
 </aside>
 {% endblock %}
 
@@ -84,10 +100,12 @@ function calculateArray(){
             $(this).css({'background':'none'});   
         }
     });
-    $("#num_tweets").html(counter);
+    $(".num_tweets").html(counter);
 }
 
 function submitResponse(next_question){
+    window.scrollTo(0,0);
+
     var arrays = getArraysForPosting();
     tweet_ids = arrays[0].join(",");
     selected = arrays[1].join(",");
@@ -180,8 +198,26 @@ $(document).ready(function(){
         {% endif %}
         submitResponse(next_question);        
     });
+
+    $(window).scroll(function(){
+       var amount =  $(window).scrollTop();
+       if(amount > 400){
+           var offset = $("#wrapper").offset();
+           var offsetVal = 0 - offset.top + $("#modal-nav").height() + 70;
+           console.log(offsetVal);
+            $("#modal-nav").stop().animate({top:offsetVal+'px'}, 400);
+/*
+            $("#modal-nav").stop().fadeIn(300, function(){
+                $("#modal-nav").css({'opacity':'1.0'});
+            });*/
+       }
+       else{
+//            $("#modal-nav").stop().fadeOut(300);
+            $("#modal-nav").stop().animate({top: '-230px'}, 400);
+        }
+    });
+
     calculateArray();    
-    
     $("#wrapper").fadeIn(400);
 });
 

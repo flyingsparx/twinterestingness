@@ -1,6 +1,7 @@
 *{
     margin:0px;
     font-family:'Helvetica Neue', 'Helvetica', 'Sans-serif';
+    z-index:1;
 }
 html,body{
     width:100%;
@@ -25,6 +26,7 @@ header{
 #wrapper{
     width:800px;
     margin:30px auto;
+    position:relative;
 }
 
 
@@ -248,7 +250,7 @@ p.cookie{
     margin-bottom:3px;
 }
 
-#num_tweets{
+.num_tweets{
     font-size:35px;
     margin-right:10px;
     vertical-align:middle;
@@ -320,3 +322,14 @@ p.cookie{
     font-size:11px;
 }
 
+#modal-nav{
+    position:fixed;
+    width:760px;
+    min-height:80px;
+    max-height:200px;
+    top:-230px;
+    background:white;
+    border-bottom:2px solid #ccc;
+    z-index:500;
+    padding:10px 20px;
+   }
