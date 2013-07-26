@@ -6,7 +6,6 @@
 	
     <title>Twinterestingness</title>
 	
-    <link href='http://fonts.googleapis.com/css?family=Quicksand' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=PT+Sans' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Alef' rel='stylesheet' type='text/css'>
     <link href="/static/css/styles.css" rel="stylesheet" type="text/css"/>
@@ -27,7 +26,8 @@
 
 {% if not user == None %}
         <aside>
-            <img src="{{ user.profile_image }}" class="profile-image" />            <p>{{user.name }}<br />
+            <img src="{{ user.profile_image }}" class="profile-image" />            
+            <p class="profile-text">{{user.name }}<br />
             <a target="_blank" href="https://twitter.com/{{ user.screen_name }}">@{{ user.screen_name }}</a></p>
             <button class="logout"><a href="/logout">logout</a></button>
         </aside>
@@ -36,7 +36,7 @@
 
         <aside>
         <h3>Project information</h3>
-        <p>This experiment is part of a research project by Will Webberley.</p>
+        <p class="small">This experiment is part of a research project by <a href="http://flyingsparx.net" target="_blank">Will Webberley</a>, <a href="http://users.cs.cf.ac.uk/Stuart.M.Allen" target="_blank">Stuart Allen</a>, and <a href="http://www.cs.cf.ac.uk/contactsandpeople/staffpage.php?emailname=R.M.Whitaker" target="_blank" >Roger Whitaker</a>.</p>
         <ul>
             <li class="source"><p><a target="_blank" href="https://github.com/flyingsparx/twinterestingness">Experiment source</a></p></li>
             <li class="web"><p><a target="_blank" href="http://flyingsparx.net/research">Research information</a></p></li>
@@ -49,12 +49,6 @@
 </div>
 
 <script type="text/javascript" src="/static/js/jquery.js"></script>		
-<!--
-<script type="text/javascript" src="/static/js/easing.js"></script>
-<script type="text/javascript" src="/static/js/color.js"></script>
-<script type="text/javascript" src="/static/js/main.js"></script>
--->
-
 <script type="text/javascript">
 {% block scripts %}
 

@@ -28,22 +28,22 @@ def createSession(user):
             verified = 0
             if friend.verified:
                 verified = 1
-            c.execute("INSERT INTO friend VALUES(?,?,?,?,?,?,?,?,?,?,?,?)", [str(session_id), user.id, friend.id, friend.screen_name, friend.name, friend.profile_image_url, friend.friends_count, friend.followers_count, friend.statuses_count, friend.favourites_count, friend.listed_count, verified])
+            c.execute("INSERT INTO friend VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)", [str(session_id), user.id, friend.id, friend.screen_name, friend.name, friend.profile_image_url, friend.friends_count, friend.followers_count, friend.statuses_count, friend.favourites_count, friend.listed_count, verified, 0])
         
 
     con.commit()
-    s = Session(session_id, user, timestamp)
-    return s
+    sess = Session(session_id, user, timestamp)
+    return sess
 
 # Return the session given by the sess_id
 # Session contains the user represented by the session
 def getSession(sess_id):
     con, c = connect()
-    r1 = c.execute("SELECT * FROM session WHERE session_id='"+str(sess_id)+"'").fetchone()
+    sess_details = c.execute("SELECT * FROM session WHERE session_id='"+str(sess_id)+"'").fetchone()
     r = c.execute("SELECT * FROM user WHERE session_id='"+str(sess_id)+"'").fetchone()
     user = User(r['user_id'],r['name'],r['username'],r['profile_image'],r['friends_count'],r['followers_count'],r['statuses_count'],r['favourites_count'],r['listed_count'],r['verified'])
-    sess = Session(sess_id,user,r1['timestamp'])
-    sess.user.friends = getFriends(sess)
+    sess = Session(sess_id,user,sess_details['timestamp'])
+    sess.user.friends = getFriendsNotDone(sess)
     return sess
 
 # Get the current question for this user's session.
@@ -116,14 +116,20 @@ def updateTimeline(sess,question,selected):
 # Retrieve the friends of the authenticated user from the database from when
 # they authenticated with Twitter.
 # Friends returned as a list of User objects:
-def getFriends(sess):
+def getFriendsNotDone(sess):
     con, c = connect()
-    result = c.execute("SELECT * FROM friend WHERE session_id = '"+sess.id+"' AND id = "+str(sess.user.id)).fetchall()
+    result = c.execute("SELECT * FROM friend WHERE session_id = '"+sess.id+"' AND id = "+str(sess.user.id)+" AND done = 0").fetchall()
     friends = []
     for row in result:
         user = User(row['friend_id'],row['name'],row['username'],row['profile_image'],row['friends_count'],row['followers_count'],row['statuses_count'],row['favourites_count'],row['listed_count'],row['verified'])
         friends.append(user)
     return friends
+
+def markFriendDone(sess, friend):
+    con, c = connect()
+    c.execute("UPDATE friend SET done=1 WHERE session_id='"+sess.id+"' AND friend_id="+str(friend.id))
+    con.commit()
+    return True
 
 # Manage the connect to the database and return the connection
 # and cursor objects
@@ -148,7 +154,8 @@ def initDB():
             statuses_count INTEGER,
             favourites_count INTEGER,
             listed_count INTEGER,
-            verified INTEGER)''')
+            verified INTEGER,
+            done INTEGER)''')
     c.execute('''CREATE TABLE IF NOT EXISTS session(
             session_id TEXT,
             timestamp INTEGER,

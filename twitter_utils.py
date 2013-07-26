@@ -1,6 +1,7 @@
 import tweepy
 import os, random
 from models import *
+import database
 
 # Load the application's consumer token and secret from 
 # environment variables.
@@ -48,13 +49,25 @@ def getAuthenticatedAPI(session):
 ## TWITTER API METHODS ##
 
 # Get a representation of the User who has logged in.
-# Also, get a list of 100 recent friends which we can store for creating
+# Also, get a list of some recent friends which we can store for creating
 # timelines for questions later:
 def getDetails(session):
     api = getAuthenticatedAPI(session)
     user = api.verify_credentials()
-    friend_ids = api.friends_ids(user_id=user.id,count=100)
-    user.friends = api.lookup_users(user_ids=friend_ids)
+    friend_ids = api.friends_ids(user_id=user.id,count=400)
+    user.friends = []
+    friends_to_request = []
+    counter = 0
+    for id in friend_ids:
+        counter += 1
+        friends_to_request.append(id)
+        if counter == 100: # limited to 100 per lookup_users
+            user.friends = user.friends + api.lookup_users(user_ids=friends_to_request)
+            friends_to_request = []
+            counter = 0
+    if counter % 100 != 0:
+        user.friends = user.friends + api.lookup_users(user_ids=friends_to_request)
+
     return user
 
 # Get the authenticated user's home timeline (Tweets from self and friends)
@@ -77,10 +90,13 @@ def getUserTimeline(session, user):
 # in a question:
 def getWeightedChoice(friends):
     choices = []
-    weight = len(friends) # initial start weight
+    weight = len(friends)*20 # initial start weight
+    decrement = 50
     for friend in friends:
-        choices.append((friend, weight))
-        weight = weight - 1
+        if(weight >= 0):
+            choices.append((friend, weight))
+            decrement -= 5
+            weight = weight - decrement
     
     # Now do weighted selection:
     total = sum(w for c, w in choices)
@@ -97,16 +113,17 @@ def getWeightedChoice(friends):
 def getTimelineForQuestion(question, session, user):
     mostFollowersFirst = sorted(user.friends, key=lambda user: user.followers_count)
     timeline = None
+    friend = None
     if question == 1:
         timeline = getHomeTimeline(session)
     elif question == 2:
-        friend = mostFollowersFirst[-1]
+        friend = getWeightedChoice(mostFollowersFirst)
         timeline = getUserTimeline(session, friend)
     elif question == 3:
         friend = getWeightedChoice(mostFollowersFirst)
         timeline = getUserTimeline(session, friend)
     elif question == 4:
-        friend = mostFollowersFirst[-2]
+        friend = getWeightedChoice(mostFollowersFirst)
         timeline = getUserTimeline(session, friend)
     elif question == 5:
         friend = getWeightedChoice(mostFollowersFirst)
@@ -114,8 +131,9 @@ def getTimelineForQuestion(question, session, user):
     elif question == 6:
         friend = getWeightedChoice(mostFollowersFirst)
         timeline = getUserTimeline(session, friend)
-
-    return timeline
+    
+    
+    return timeline, friend
 
 def getQuestionCount():
     return 6

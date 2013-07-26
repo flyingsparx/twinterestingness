@@ -63,6 +63,9 @@ p{
     font-weight:lighter;
     margin-bottom:15px;
 }
+p.small{
+    font-size:13px;
+}
 p a:link{color:#A80000; text-decoration:none;}
 p a:visited{color:#A80000; text-decoration:none;}
 p a:hover{color:#aaa;}
@@ -191,6 +194,7 @@ button.start{
     background-repeat:no-repeat;
     background-size:25px;
     padding-left:30px;
+    cursor:pointer;
 }
 
 button.previous{
@@ -199,10 +203,11 @@ button.previous{
    background-repeat:no-repeat;
    background-size:25px;
    float:left;
-   color:#ccc;
+   color:white;
    border:1px solid #A80000;
    cursor:pointer;
    opacity:0.6;
+   margin:0px 0px;
 }
 button.previous:hover{opacity:1.0;}
 
@@ -212,10 +217,11 @@ button.next{
    background-repeat:no-repeat;
    background-size:25px;
    float:right;
-   color:#ccc;
+   color:white;
    border:1px solid #A80000;
    cursor:pointer;
    opacity:0.6;
+   margin:0px 0px;
 } 
 button.next:hover{opacity:1.0;}
 
@@ -238,8 +244,12 @@ p.cookie{
     margin-right:15px;
 }
 
+.profile-text{
+    margin-bottom:3px;
+}
+
 #num_tweets{
-    font-size:30px;
+    font-size:35px;
     margin-right:10px;
     vertical-align:middle;
 }
@@ -272,7 +282,7 @@ p.cookie{
     min-height:80px;
     cursor:pointer;
 }
-#timeline article:hover{background:rgba(0,0,0,0.02);}
+#timeline article:hover{background:rgba(0,0,0,0.03);}
 
 #timeline article .profile-image{
     width:50px;

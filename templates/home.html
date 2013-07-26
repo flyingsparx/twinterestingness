@@ -6,9 +6,9 @@
     <p>Twinterestingness is an experiment by <a href="http://cs.cardiff.ac.uk" target="_blank">Cardiff School of Computer Science &amp; Informatics</a> from <a href="http://cardifff.ac.uk">Cardiff University</a>.</p>
 
     {% if not user == None %}
-        {% if user.friends_count < 10 %}
-        <h2>Sorry, but you are ineligible to take part</h2>
-        <p>Unfortunately you only follow {{ user.friends_count }} users. You need to be following at least 10 other Twitter users in order to take part.</h2>
+        {% if user.friends_count < 20 %}
+        <h2>Sorry, but you are ineligible for this experiment :(</h2>
+        <p>Unfortunately you only follow {{ user.friends_count }} users. You need to be following at least 20 Twitter users in order to take part.</p>
         <p>Please come back once you have reached this number, though!</p>
         {% else %}
         {% if question > 0 %}
@@ -20,6 +20,7 @@
         <h2>Thank you for taking part</h2>
         <p>You can logout at any time during the experiment using the links to the side.</p>
        <p>If you have done this experiment before, then <a href="#start">skip ahead</a> to start. Otherwise, we recommend reading the brief instructions below before starting.</p>
+       <p>The experiment usually takes less than five minutes to complete.</p>
        
        <h2>Brief instructions</h2> 
       <p>You will be guided through questions of two types; one based around user timelines of some people that you follow, and the other based on your home timeline of potentially <i>everyone</i> you follow.</p>
@@ -43,8 +44,9 @@
     
     {% else %}
     <h2>The experiment</h2>
-    <p>The idea of the experiment is to get an idea of the content that <i> you</i> find interesting from the users that you follow. Thus, to take part in the experiment, you need to have a <a href="https://twitter.com" target="_blank">Twitter</a> account and be following at least 10 users.</p>
+    <p>The idea of the experiment is to get an idea of the content that <i> you</i> find interesting from the users that you follow. Thus, to take part in the experiment, you need to have a <a href="https://twitter.com" target="_blank">Twitter</a> account and be following at least <strong>20 users</strong>.</p>
     <p>If you take part in the experiment, you will be asked a series of questions in which we ask you to rate the Tweets from your Twitter friends based on how <i>interesting</i> you find them. We'll tell you more about it before you start the experiment.</p>
+    <p>The entire experiment should take less than 5 minutes.</p>
     <h2>Getting started</h2>
     <p>To take part in the experiment, please sign in using your Twitter account. Please note that we never see your email address or Twitter password at any stage.</p> 
     <button class="sign_in"><a href="{{ auth }}">sign in with Twitter</a></button>

@@ -106,12 +106,30 @@ def question(q):
         # new timeline from Twitter, store it and show it:
         # (Occurs if 'next' button is pressed)
         if requested_question == (on_question+1):
-            timeline = utils.getTimelineForQuestion(requested_question, session, g.user)
-            if timeline == None:
-                return redirect(url_for("finish"))
-            database.createQuestion(g.sess, timeline)
-            timeline = database.getTimeline(g.sess, requested_question)
+            tweet_counter = 0
+            query_counter = 0
+            # Make two attempts to create a timeline with more than 5 Tweets
+            while tweet_counter < 5 and query_counter < 3:
+                timeline, friend = utils.getTimelineForQuestion(requested_question, session, g.user)
+                if timeline == None:
+                    return redirect(url_for("finish"))
+                tweet_counter = 0
+                for tweet in timeline:
+                    if not tweet.text.startswith("@") and not tweet.text.startswith("RT"):
+                        tweet_counter = tweet_counter + 1
+                if tweet_counter >=5:
+                    if not friend == None:
+                        database.markFriendDone(g.sess, friend)
+                    database.createQuestion(g.sess, timeline)
+                    timeline = database.getTimeline(g.sess, requested_question)
+                    query_counter = query_counter + 1
         
+        # Nullify timeline if it contains insufficient Tweets (error will be shown)
+        if len(timeline.tweets) < 5:
+            timeline = None
+
+        # Finally, get the total number of questions, load the description for THIS
+        # question and show the question with the appropriate timeline:
         questions = utils.getQuestionCount()
         description = utils.getDescriptionForQuestion(requested_question)
         return render_template("question.html", user=g.user, timeline = timeline, question = requested_question, description = description, question_count = questions)

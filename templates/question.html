@@ -3,31 +3,27 @@
 
 <section>
     {% if timeline == None %}
-
-    <h1>There was an issue generating your question</h1>
-    <h2>Sorry for the inconvenience.</h2>
-    <p>Please return to the <a href="/">homepage</a> to start again.</p>
+    <h1>Oops!</h1>
+    <h2>There was an issue generating this question</h2>
+    <p>Please continue onto the next question. If the problem persists, please <a href="mailto:W.M.Webberley@cs.cardiff.ac.uk">let me know</a>.
 
     {% else %}
-    <h1>Question {{ question }}</h1>
+    <h1>Question {{ question }} of {{ question_count }}</h1>
     <p>In this question, please select the Tweet(s) from the timeline that you find interesting.</p>
     <p>Please select <strong>at least one</strong> Tweet from the timeline. There is no upper limit.</p>
+    <p>If none of the Tweets are interesting to you (why do you even follow the user?!), then select Tweet(s) that are the <strong>most</strong> interesting to you.</p>
 
     <h2>Timeline Description</h2>
     <p>{{ description }}</p>
         
     <div id="timeline">
-
     {% autoescape false %}
     {% for tweet in timeline.tweets %}
-        <article data-id="{{tweet.id}}" data-user="{{tweet.user.id}}"
-        {% if tweet.selected == 1 %}
-        class="selected"
-        {% endif %}
-        >
+        <article data-id="{{tweet.id}}" data-user="{{tweet.user.id}}" {% if tweet.selected == 1 %}class="selected"{% endif %}>            
             <img src="{{ tweet.user.profile_image }}" class="profile-image" />
             <p class="screen-name">@{{ tweet.user.screen_name}}
-                <span class="name">{{ tweet.user.name }}</span></p>
+                <span class="name">{{ tweet.user.name }}</span>
+            </p>
             <p class="text">{{ tweet.getDisplayText() }}</p>
             <p class="info"><label>Retweeted</label>{{ tweet.retweet_count }}</p>
             <div style="clear:both"></div>
@@ -61,7 +57,7 @@
         {% if question < question_count %}
             <button class="next">next</button>
         {% else %}
-            <button class="start" style="float:right">finish</button>
+            <button class="start" style="margin:0px;float:right">finish</button>
         {% endif %}
      </div>
      <img id="loading" src="/static/media/loading.gif" alt="loading" />
@@ -160,16 +156,28 @@ $(document).ready(function(){
 
     $(".next").click(function(){
         var next_question = {{ question }} + 1;
+        {% if timeline == None %}
+            window.location = "/question/"+next_question;
+            return;        
+        {% endif %}
         submitResponse(next_question);        
     });
 
     $(".start").click(function(){
-        var next_question = {{ question }} + 1;
+        var next_question = {{ question}} + 1;
+        {% if timeline == None %}
+            window.location = "/question/"+next_question;
+            return;        
+        {% endif %}
         submitResponse(next_question);        
     });
 
     $(".previous").click(function(){
         var next_question = {{ question }} - 1;
+        {% if timeline == None %}
+            window.location = "/question/"+next_question;
+            return;        
+        {% endif %}
         submitResponse(next_question);        
     });
     calculateArray();    
