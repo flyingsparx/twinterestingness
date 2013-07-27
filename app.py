@@ -113,16 +113,20 @@ def question(q):
                 timeline, friend = utils.getTimelineForQuestion(requested_question, session, g.user)
                 if timeline == None:
                     return redirect(url_for("finish"))
+                # Only count tweets that aren't retweets or @-replies:
                 tweet_counter = 0
                 for tweet in timeline:
                     if not tweet.text.startswith("@") and not tweet.text.startswith("RT"):
                         tweet_counter = tweet_counter + 1
+                # If enough of these Tweets, while loop will exit.
+                # Create the question and mark this friend as 'done' and get the new timeline:
                 if tweet_counter >=5:
                     if not friend == None:
                         database.markFriendDone(g.sess, friend)
                     database.createQuestion(g.sess, timeline)
                     timeline = database.getTimeline(g.sess, requested_question)
-                    query_counter = query_counter + 1
+                # Increment the number of queries made (successful, or not)
+                query_counter = query_counter + 1
         
         # Nullify timeline if it contains insufficient Tweets (error will be shown)
         if len(timeline.tweets) < 5:
