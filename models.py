@@ -30,8 +30,12 @@ class Tweet:
         words = []
         for token in tokens:
             word = ""
-            if token.startswith("http") or token.startswith("@") or token.startswith("#"):
-                word = '<span class="link">'+token+'</span>'
+            if token.startswith("http"):
+                word='<a target="_blank" href="'+token+'" class="link">'+word+'</a>'
+            elif token.startswith("@"):
+                word='<a target="_blank" href="https://twitter.com/'+token.replace("@","")+'" class="link">'+token+'</a>'
+            elif token.startswith("#"):
+                word = '<a target="_blank" href="https://twitter.com/search?q=%23'+token.replace("#","")+'&src=hash" class="link">'+token+'</a>'
             else:
                 word = token
             words.append(word)

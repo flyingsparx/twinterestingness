@@ -6,20 +6,27 @@
 <p>On this page we outline our use of cookies on this website.</p>
 <hr />
 <h2>What are cookies?</h2>
-<p>Cookies are small, temporary pieces of information that are stored within your web browser on your own computer. Generally, they are used by websites to keep track of where users are as they navigate through the site.</p>
-<p>For example, a shopping website might use cookies to identify you as the same user as you add more items to your shopping basket. Without using cookies, the site would not be able to know who you are, and so could associate you with the wrong basket.</p>
+<p>Cookies are small, temporary pieces of information that are stored within your web browser on your own computer. Generally, they are used by websites to keep track of where users are as they navigate around the site.</p>
+<p>For example, a shopping website might use cookies to identify you as the same user as you add more items to your shopping basket. Without cookies, the site would not be able to identify you, and so could associate you with the wrong basket.</p>
 
 <h2>What we use cookies for</h2>
-<p><strong>Cookies are only stored for your session once you have signed in with Twitter.</strong></p>
 <p>We store information in your browser so that we can identify which user has signed in through Twitter, to minimise the number of API calls we have to make to Twitter on your behalf and thus improve the efficiency of the website.</p>
-<p>For example, we will store your Twitter details in cookies as well as some variables to keep track of which questions you have answered and your 'signed in' status on the website.</p>
+
+<h3>When not signed in</h3>
+<p>Before you sign in, we generate Twitter request tokens, which we store as cookies in your browser. This means that when you return to the site after authenticating our site with Twitter, we are able to identify you and generate access tokens, which are used to make the actual useful requests to Twitter.</p>
+
+<h3>After signing in</h3>
+<p>Once you have signed in, we store the access tokens for your Twitter account as cookies. We then use these tokens to retrieve data from Twitter on your behalf (e.g. your profile image, your friends' timelines, etc.).</p>
+<p>We also store a unique identifier which helps us identify who you are as you move through the questions. This means we can show you the correct question at each stage and store your responses more accurately.</p>
+
 
 <h2>How long the cookies are stored for</h2>
 <p>Cookies will be stored on your browser for as long as you are signed in. By logging out, you will destroy all of the cookies associated with the session on this site. This will mean that you will have to re-login with Twitter to access the experiment again.</p>
-<p>At any time, you can view the cookies stored using your browser's security settings pages/dialogs.</p>
+<p>At any time, you can view the cookies stored using your browser's security settings.</p>
 
 <hr />
 <p>Find out more information on cookies by visiting the relevant <a href="http://en.wikipedia.org/wiki/HTTP_cookie" target="_blank">Wikipedia article</a>.</p>
+<p>If you're more interested in our particular way of using cookies, please view the <a href="https://github.com/flyingsparx/twinterestingness" target="_blank">project's source code</a>.</p>
 
 
 </section>

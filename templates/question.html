@@ -25,11 +25,6 @@
 
     {% else %}
     <h1>Question {{ question }} of {{ question_count }}</h1>
-    <p>In this question, please select the Tweet(s) from the timeline that you find interesting.</p>
-    <p>Please select <strong>at least one</strong> Tweet from the timeline. There is no upper limit.</p>
-    <p>If none of the Tweets are interesting to you, then select Tweet(s) that are the <strong>most</strong> interesting to you.</p>
-
-    <h2>Timeline Description</h2>
     <p>{{ description }}</p>
         
     <div id="timeline">
@@ -52,9 +47,14 @@
 
 </section> 
 
-<aside>
-    <h3>Help</h3>
-    <ul>
+<aside class="instructions">
+    <h3>Instructions</h3>
+     <p>In this question, please select the Tweet(s) from the timeline that you find interesting.</p>
+     <p>Please select <strong>at least one</strong> Tweet from the timeline. There is no upper limit.</p>
+     <p>If none of the Tweets are interesting to you, then select Tweet(s) that are the <strong>most</strong> interesting to you.</p>
+    
+    <p id="show-help">[show help]</p>
+    <ul id="help-list">
         <li>To select a Tweet, simply click it.</li>
         <li>To unselect a Tweet, click it again.</li>
         <li>When satisfied, click the 'next' button to  move to the next question.</li>
@@ -170,6 +170,21 @@ $(document).ready(function(){
             $(this).addClass("selected");
         }
         calculateArray();
+    }).find($("a")).click(function(){
+        var win = window.open();
+        win.location = $(this).attr("href");
+        return false;
+    });
+
+    $("#show-help").click(function(){
+       if ($("#help-list").is(":hidden")) {
+            $("#help-list").stop().slideDown("slow");
+            $("#show-help").html('[hide help]');
+       }
+       else{
+            $("#help-list").stop().slideUp("slow");
+            $("#show-help").html('[show help]');
+       }
     });
 
     $(".next").click(function(){
@@ -203,16 +218,10 @@ $(document).ready(function(){
        var amount =  $(window).scrollTop();
        if(amount > 400){
            var offset = $("#wrapper").offset();
-           var offsetVal = 0 - offset.top + $("#modal-nav").height() + 70;
-           console.log(offsetVal);
-            $("#modal-nav").stop().animate({top:offsetVal+'px'}, 400);
-/*
-            $("#modal-nav").stop().fadeIn(300, function(){
-                $("#modal-nav").css({'opacity':'1.0'});
-            });*/
+           var offsetVal = 0 - offset.top + $("#modal-nav").height() + 60;
+           $("#modal-nav").stop().animate({top:offsetVal+'px'}, 400);
        }
        else{
-//            $("#modal-nav").stop().fadeOut(300);
             $("#modal-nav").stop().animate({top: '-230px'}, 400);
         }
     });
