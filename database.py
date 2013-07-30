@@ -134,7 +134,7 @@ def markFriendDone(sess, friend):
 # Manage the connect to the database and return the connection
 # and cursor objects
 def connect():
-    con = s.connect("static/data/twinterest.db")
+    con = s.connect("data/twinterest.db")
     con.row_factory = s.Row
     c = con.cursor()
     return (con, c)
