@@ -2,6 +2,8 @@ import sqlite3 as s
 import time, uuid
 from models import *
 
+DATABASE_FILE = 'twinterest.db'
+
 # Create a new session and save to database. This is called when a user is redirected
 # back after verifying with Twitter.
 # As well as storing the session (to keep track of current question, etc.),
@@ -134,7 +136,7 @@ def markFriendDone(sess, friend):
 # Manage the connect to the database and return the connection
 # and cursor objects
 def connect():
-    con = s.connect("data/twinterest.db")
+    con = s.connect("data/"+DATABASE_FILE)
     con.row_factory = s.Row
     c = con.cursor()
     return (con, c)
