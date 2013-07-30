@@ -6,6 +6,7 @@ from models import *
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('TWINTEREST_SECRET_KEY')
+MIN_REQUIRED_FRIENDS = 30
 database.initDB()
 
 # On every request, check if user is logged in.
@@ -30,15 +31,15 @@ def before_request():
 @app.route("/")
 def home():
     if not g.user == None:
-           question_num = database.getQuestionNumber(g.sess)
-           return render_template('home.html',  user=g.user, question = question_num)
+       question_num = database.getQuestionNumber(g.sess)
+       return render_template('home.html',  user=g.user, question = question_num, min_friends = MIN_REQUIRED_FRIENDS)
     else:
         auth, authUrl = utils.getAuthURL()
         # set request token key and secret in the session variables so we
         # can get them later:
         session['request_token_key'] = auth.request_token.key
         session['request_token_secret'] = auth.request_token.secret
-        return render_template('home.html', auth = authUrl, user = g.user)
+        return render_template('home.html', auth = authUrl, user = g.user, min_friends = MIN_REQUIRED_FRIENDS)
 
 # Return function when redirected by Twitter back to application.
 # If verifier is set, use request tokens and verifier to create a
@@ -108,8 +109,9 @@ def question(q):
         if requested_question == (on_question+1):
             tweet_counter = 0
             query_counter = 0
-            # Make two attempts to create a timeline with more than 5 Tweets
-            while tweet_counter < 5 and query_counter < 3:
+            # Make five attempts to create a timeline with more than 5 Tweets
+            # (don't make too many requests though!)
+            while tweet_counter < 5 and query_counter < 6:
                 timeline, friend = utils.getTimelineForQuestion(requested_question, session, g.user)
                 if timeline == None:
                     return redirect(url_for("finish"))

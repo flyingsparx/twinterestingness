@@ -131,13 +131,30 @@ def getTimelineForQuestion(question, session, user):
     elif question == 6:
         friend = getWeightedChoice(mostFollowersFirst)
         timeline = getUserTimeline(session, friend)
-    
+    elif question == 7:
+        friend = getWeightedChoice(mostFollowersFirst)
+        timeline = getUserTimeline(session, friend)
+    elif question == 8:
+        friend = getWeightedChoice(mostFollowersFirst)
+        timeline = getUserTimeline(session, friend)
+    elif question == 9:
+        friend = getWeightedChoice(mostFollowersFirst)
+        timeline = getUserTimeline(session, friend)
+    elif question == 10:
+        friend = getWeightedChoice(mostFollowersFirst)
+        timeline = getUserTimeline(session, friend)
+
     
     return timeline, friend
 
+# Return the total number of questions.
+# I am lazy, and so this is hard-coded :(
+# If updating getTimelineForQuestion(), remember to update this, too:
 def getQuestionCount():
-    return 6
+    return 10
 
+# Return the description to be displayed for each question:
+# (Currently only two types)
 def getDescriptionForQuestion(question):
     if question == 1:
         return "This question contains Tweets from your 'home timeline'. This is the timeline you'd see if you were logged into Twitter right now, so it contains Tweets from several different users."
