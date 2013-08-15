@@ -10,12 +10,12 @@ DATABASE_FILE = 'twinterest.db'
 # also store the user information.
 # This 'session' represents a user answering the questions, and is used
 # in case a particular user has multiple attempts.
-def createSession(user):
+def createSession(user, mk_turk):
     con, c = connect()
     timestamp = time.time()
     session_id = str(uuid.uuid4())
     question = 0
-    c.execute("INSERT INTO session VALUES('"+str(session_id)+"',"+str(timestamp)+","+str(question)+")")
+    c.execute("INSERT INTO session VALUES('"+str(session_id)+"',"+str(timestamp)+","+str(question)+","+str(mk_turk)+")")
     
     # Turn verified status into integer for storage (0=false,1=true)
     verified = 0
@@ -34,7 +34,7 @@ def createSession(user):
         
 
     con.commit()
-    sess = Session(session_id, user, timestamp)
+    sess = Session(session_id, user, timestamp, mk_turk)
     return sess
 
 # Return the session given by the sess_id
@@ -44,7 +44,7 @@ def getSession(sess_id):
     sess_details = c.execute("SELECT * FROM session WHERE session_id='"+str(sess_id)+"'").fetchone()
     r = c.execute("SELECT * FROM user WHERE session_id='"+str(sess_id)+"'").fetchone()
     user = User(r['user_id'],r['name'],r['username'],r['profile_image'],r['friends_count'],r['followers_count'],r['statuses_count'],r['favourites_count'],r['listed_count'],r['verified'])
-    sess = Session(sess_id,user,sess_details['timestamp'])
+    sess = Session(sess_id,user,sess_details['timestamp'], sess_details['mk_turk'])
     sess.user.friends = getFriendsNotDone(sess)
     return sess
 
@@ -161,7 +161,8 @@ def initDB():
     c.execute('''CREATE TABLE IF NOT EXISTS session(
             session_id TEXT,
             timestamp INTEGER,
-            question INTEGER)''')
+            question INTEGER,
+            mk_turk INTEGER)''')
     c.execute('''CREATE TABLE IF NOT EXISTS user(
             session_id TEXT,
             user_id INTEGER,

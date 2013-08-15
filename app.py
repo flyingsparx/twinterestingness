@@ -6,8 +6,11 @@ from models import *
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('TWINTEREST_SECRET_KEY')
+MK_TURK_CODE = os.environ.get('TWINTEREST_MK_TURK')
 MIN_REQUIRED_FRIENDS = 30
+access_log = 'access.log'
 database.initDB()
+
 
 # On every request, check if user is logged in.
 # If so, generate a global user object from the user's session
@@ -25,6 +28,7 @@ def before_request():
         g.user = None
         g.sess = None
 
+
 # Root for twinterest.flyingsparx.net
 # if user variable set, show standard homepage.
 # else, create a Twitter OAuth URL and send this to the homepage.
@@ -39,6 +43,10 @@ def home():
         # can get them later:
         session['request_token_key'] = auth.request_token.key
         session['request_token_secret'] = auth.request_token.secret
+        # check if user from Mechanical Turk. If so, give another cookie too:
+        if 'type' in request.args:
+            if request.args['type'] == 'mkt':
+                session['mechanical_turk'] = '1'
         return render_template('home.html', auth = authUrl, user = g.user, min_friends = MIN_REQUIRED_FRIENDS)
 
 # Return function when redirected by Twitter back to application.
@@ -52,11 +60,14 @@ def callback():
     verifier = request.args['oauth_verifier']
     if verifier is None:
         return redirect(url_for('home'))
-    
-    # If it does, get the request key and token and generate an access token:
-    request_key = session['request_token_key']
-    request_secret = session['request_token_secret']
-    access_token = utils.getAccessToken(verifier, request_key, request_secret)
+   
+    try:
+        # If it does, get the request key and token and generate an access token:
+        request_key = session['request_token_key']
+        request_secret = session['request_token_secret']
+        access_token = utils.getAccessToken(verifier, request_key, request_secret)
+    except:
+        return redirect(url_for('home'))
 
     # Remove request token info and replace with access token and our session  info
     session.pop('request_token_key')
@@ -64,11 +75,19 @@ def callback():
     session['access_key'] = access_token[0]
     session['access_secret'] = access_token[1]
 
+    mk_turk = 0
+
+    # Check if user came from Mechanical Turk:
+    if 'mechanical_turk' in session:
+        if session['mechanical_turk'] == '1':
+            mk_turk = 1
+        session.pop('mechanical_turk')
+
     # Request information on the authorised user:
     user = utils.getDetails(session)
 
     # Create a 'session' instance for this user and save the user details:
-    sess = database.createSession(user)
+    sess = database.createSession(user, mk_turk)
     session['id'] = sess.id
     
     return redirect(url_for('home'))
@@ -183,10 +202,14 @@ def api(q):
 @app.route("/finish/")
 def finish():
     try:
+        mk_turk = False
+        if g.sess != None:
+            if g.sess.mk_turk == 1:
+                mk_turk = True
         session.pop('access_key')
         session.pop('access_secret')
         session.pop('id')
-        return render_template('finish.html', user=None)
+        return render_template('finish.html', user=None, mkt = mk_turk, code=MK_TURK_CODE)
     except:
         return redirect(url_for("home"))
 
@@ -218,11 +241,14 @@ def logout():
 if app.debug is not True:
     import logging
     from logging.handlers import RotatingFileHandler
+    
+    # error log:
     file_handler = RotatingFileHandler('python.log', maxBytes=1024 * 1024 * 100, backupCount=20)
     file_handler.setLevel(logging.ERROR)
     formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
     file_handler.setFormatter(formatter)
     app.logger.addHandler(file_handler)
+
 
 # Main code (if invoked from Python at command line for development server)
 if __name__ == '__main__':

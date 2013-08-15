@@ -5,6 +5,22 @@
 <h1>All done!</h1>
 <p>Thanks a lot for taking part in this experiment. We have now logged you out.</p>
 
+{% if mkt == True %}
+<h2>Your completion code</h2>
+<p>Below is the code that you should enter into Mechanical Turk to claim your reward. If you have any problems with this code, please <a href="mailto:W.M.Webberley@cs.cardiff.ac.uk">get in touch</a>!</p>
+<p style="color:#222; font-size:20px; font-family:'Courier','monospace';">
+    {{ code }}
+</p>
+<p><strong>Important:</strong> Please do not leave this page until you've made a note of the code, as you will not be shown it again.</p>
+
+<p><strong>Note:</strong> If you choose to do the experiment again, you will not be able to claim any more rewards.</p>
+
+<h2>Please spread the word!</h2>
+{% endif %}
+
+<p>Please share this experiment with your own followers!</p>
+<button class="sign_in"><a href="https://twitter.com/intent/tweet?text=I%20just%20took%20part%20in%20a%205-minute%20experiment%20to%20find%20interesting%20information%20on%20Twitter!&url=http://twinterest.flyingsparx.net" target="_blank">share experiment</a></button>
+
 <h2>Want another go?</h2>
 <p>If you want to have another go, please go <a href="/">home</a> and login with your Twitter account again.</p>
 

@@ -12,10 +12,11 @@ class User:
         self.verified = verified
 
 class Session:
-    def __init__(self, id, user, timestamp):
+    def __init__(self, id, user, timestamp, mk_turk):
         self.id = id
         self.user = user
         self.timestamp = timestamp
+        self.mk_turk = mk_turk
 
 class Tweet:
     def __init__(self, id, text, retweet_count, user, selected):
@@ -31,7 +32,7 @@ class Tweet:
         for token in tokens:
             word = ""
             if token.startswith("http"):
-                word='<a target="_blank" href="'+token+'" class="link">'+word+'</a>'
+                word='<a target="_blank" href="'+token+'" class="link">'+token+'</a>'
             elif token.startswith("@"):
                 word='<a target="_blank" href="https://twitter.com/'+token.replace("@","")+'" class="link">'+token+'</a>'
             elif token.startswith("#"):
